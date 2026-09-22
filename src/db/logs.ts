@@ -49,6 +49,16 @@ export function getLogsForDate(date: string): HabitLog[] {
   return rows.map(rowToLog);
 }
 
+/** Todas las fechas ("YYYY-MM-DD") en que un hábito fue marcado como hecho. */
+export function getLogsForHabit(habitId: number): string[] {
+  const db = getDb();
+  const rows = db.getAllSync<{ date: string }>(
+    'SELECT date FROM habit_logs WHERE habit_id = ? ORDER BY date',
+    [habitId]
+  );
+  return rows.map((r) => r.date);
+}
+
 /** Todos los logs (de cualquier hábito) en un rango de fechas [startDate, endDate], inclusive. */
 export function getLogsInRange(startDate: string, endDate: string): HabitLog[] {
   const db = getDb();

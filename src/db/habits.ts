@@ -1,4 +1,5 @@
 import { getDb } from './client';
+import { todayLocal } from '../date';
 import type { AreaId, Habit } from '../types';
 
 type HabitRow = {
@@ -21,14 +22,6 @@ function rowToHabit(row: HabitRow): Habit {
     archived: row.archived === 1,
     createdAt: row.created_at,
   };
-}
-
-function todayLocal(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 /** Crea un hábito en un área. Rechaza nombres vacíos o solo espacios. */

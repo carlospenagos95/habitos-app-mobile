@@ -10,15 +10,8 @@ import {
 import { getAreas } from '@/db/client';
 import { listHabitsByArea } from '@/db/habits';
 import { getLogsForDate, toggleHabitDone } from '@/db/logs';
+import { todayLocal } from '@/date';
 import type { Area, Habit } from '@/types';
-
-function todayLocal(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 const TODAY = todayLocal();
 
