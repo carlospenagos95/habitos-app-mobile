@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { getAreas } from '../db/client';
-import { createHabit, listHabitsByArea } from '../db/habits';
-import { getLogsForDate, toggleHabitDone } from '../db/logs';
+import { getAreas } from '@/db/client';
+import { createHabit, listHabitsByArea } from '@/db/habits';
+import { getLogsForDate, toggleHabitDone } from '@/db/logs';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
-export default function HomeScreen() {
+export default function HoyScreen() {
   useEffect(() => {
     // Prueba temporal del paso 2: confirmar que las 6 áreas se sembraron.
     console.log('Áreas sembradas:', getAreas());
@@ -18,7 +18,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Buenos Hábitos</Text>
+      <Text style={styles.title}>Hoy</Text>
       <Button
         title="Crear hábito de prueba"
         onPress={() => {
@@ -43,6 +43,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   title: { fontSize: 24, fontWeight: '600' },
 });
