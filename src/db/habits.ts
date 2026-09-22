@@ -60,6 +60,20 @@ export function renameHabit(id: number, name: string): void {
   db.runSync('UPDATE habits SET name = ? WHERE id = ?', [trimmedName, id]);
 }
 
+/** Guarda la hora de recordatorio y el id de notificación de un hábito. */
+export function setHabitReminder(
+  id: number,
+  reminderTime: string | null,
+  notificationId: string | null
+): void {
+  const db = getDb();
+  db.runSync('UPDATE habits SET reminder_time = ?, notification_id = ? WHERE id = ?', [
+    reminderTime,
+    notificationId,
+    id,
+  ]);
+}
+
 /** Marca un hábito como archivado. No borra sus logs. */
 export function archiveHabit(id: number): void {
   const db = getDb();
