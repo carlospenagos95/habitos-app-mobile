@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p .github/workflows docker docs/adr)",
+      "Bash(cp ../04-landing-page/.github/workflows/ci.yml .github/workflows/ci.yml)",
+      "Bash(cp ../04-landing-page/.github/workflows/deploy.yml .github/workflows/deploy.yml)",
+      "Bash(cp ../04-landing-page/Dockerfile .)",
+      "Bash(cp ../04-landing-page/docker/nginx.conf docker/)",
+      "Bash(printf '%s\\\\n' \"@layer utilities {\" \"  .stack {\" \"    display: flex;\" \"    flex-direction: column;\" \"    gap: var\\(--space-4\\);\" \"  }\" \"\" \"  .cluster {\" \"    display: flex;\" \"    flex-wrap: wrap;\" \"    align-items: center;\" \"    gap: var\\(--space-3\\);\" \"  }\" \"\" \"  .text-muted {\" \"    color: var\\(--color-text-muted\\);\" \"  }\" \"\" \"  .text-center {\" \"    text-align: center;\" \"  }\" \"}\")",
+      "Bash(printf '%s\\\\n' \"// Hoja global. El orden importa: 'layers' declara la cascada antes que nada.\" \"@use 'styles/layers';\" \"@use 'styles/reset';\" \"@use 'styles/tokens';\" \"@use 'styles/base';\" \"@use 'styles/components';\" \"@use 'styles/utilities';\")",
+      "Bash(sed -i 's/readonly search = output<string>\\(\\);/readonly queryChange = output<string>\\(\\);/; s/search.emit\\(\\\\$any\\(\\\\$event.target\\).value\\)/queryChange.emit\\($any\\($event.target\\).value\\)/' presentation/features/catalog/sections/catalog-filters.ts)",
+      "Bash(sed -i \"s/readonly close = output<void>\\(\\);/readonly closed = output<void>\\(\\);/; s/'close.emit\\(\\)'/'closed.emit\\(\\)'/\" presentation/features/catalog/sections/product-detail.ts)",
+      "Bash(sed -i 's/close.emit\\(\\)/closed.emit\\(\\)/g' presentation/features/catalog/sections/product-detail.html)",
+      "Bash(sed -i 's/\\(search\\)=\"catalog.search\\(\\\\$event\\)\"/\\(queryChange\\)=\"catalog.search\\($event\\)\"/; s/\\(close\\)=\"ui.closeDetail\\(\\)\"/\\(closed\\)=\"ui.closeDetail\\(\\)\"/' presentation/features/catalog/catalog-page.html)"
+    ]
+  }
+}
