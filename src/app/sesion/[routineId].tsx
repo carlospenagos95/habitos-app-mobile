@@ -1,18 +1,195 @@
-import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, fontSize } from '@/theme';
+import { useEffect, useMemo } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Alert, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
+import { getExercise, getRoutine } from '@/db/exercise';
+import { buildSteps, formatClock } from '@/exercise/steps';
+import { useSessionTimer } from '@/exercise/useSessionTimer';
+import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
+import type { Exercise, RoutineId, SessionStep } from '@/types';
 
-// Marcador temporal: la sesión guiada se implementa en el paso 4 de SPEC 03.
+const WORK_COLOR = AREA_STYLE.fisica.color;
+const REST_COLOR = colors.primary;
+
 export default function SesionScreen() {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
+  const routine = useMemo(() => getRoutine(routineId as RoutineId), [routineId]);
+  const steps = useMemo(() => (routine ? buildSteps(routine) : []), [routine]);
+
+  if (routine == null || steps.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.message}>Rutina no encontrada.</Text>
+        <Pressable style={[styles.secondaryButton, styles.backButton]} onPress={() => router.back()}>
+          <Text style={styles.secondaryText}>Volver</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return <Session steps={steps} />;
+}
+
+function Session({ steps }: { steps: SessionStep[] }) {
+  const timer = useSessionTimer(steps);
+
+  const exercises = useMemo(() => {
+    const map = new Map<string, Exercise>();
+    for (const s of steps) {
+      if (s.exerciseId && !map.has(s.exerciseId)) {
+        const exercise = getExercise(s.exerciseId);
+        if (exercise) map.set(s.exerciseId, exercise);
+      }
+    }
+    return map;
+  }, [steps]);
+
+  const confirmExit = () => {
+    Alert.alert('Salir de la sesión', 'Perderás el progreso de esta sesión y no se registrará.', [
+      { text: 'Seguir entrenando', style: 'cancel' },
+      { text: 'Salir', style: 'destructive', onPress: () => router.back() },
+    ]);
+  };
+
+  // El botón atrás de Android pide la misma confirmación que "Salir".
+  useEffect(() => {
+    if (timer.finished) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      confirmExit();
+      return true;
+    });
+    return () => sub.remove();
+  });
+
+  if (timer.finished || timer.step == null) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.message}>Sesión terminada.</Text>
+        <Pressable style={[styles.secondaryButton, styles.backButton]} onPress={() => router.back()}>
+          <Text style={styles.secondaryText}>Volver</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const step = timer.step;
+  const isWork = step.kind === 'work';
+  const phaseColor = isWork ? WORK_COLOR : REST_COLOR;
+  const exercise = isWork && step.exerciseId ? exercises.get(step.exerciseId) : undefined;
+  const nextWork = steps.slice(timer.index + 1).find((s) => s.kind === 'work');
+  const nextExercise = nextWork?.exerciseId ? exercises.get(nextWork.exerciseId) : undefined;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Sesión {routineId}</Text>
+      <View style={styles.topBar}>
+        <Text style={styles.muted}>
+          {step.sectionName}
+          {step.totalRounds > 1 ? ` · Ronda ${step.round} de ${step.totalRounds}` : ''}
+        </Text>
+        <Text style={styles.muted}>
+          Paso {timer.index + 1} de {steps.length}
+        </Text>
+      </View>
+
+      <View style={styles.main}>
+        <Text style={[styles.phase, { color: phaseColor }]}>{isWork ? 'Trabajo' : 'Descanso'}</Text>
+        <Text style={[styles.countdown, { color: phaseColor }]}>{formatClock(timer.remainingSec)}</Text>
+        {timer.paused && <Text style={styles.pausedLabel}>En pausa</Text>}
+
+        {isWork ? (
+          <>
+            <Text style={styles.exerciseName}>{exercise?.name ?? step.exerciseId}</Text>
+            <Text style={styles.instructions}>{exercise?.instructions}</Text>
+          </>
+        ) : (
+          <Text style={styles.exerciseName}>Descanso</Text>
+        )}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.muted}>Siguiente</Text>
+        <Text style={styles.nextName}>{nextExercise?.name ?? 'Fin de la rutina'}</Text>
+        <Text style={styles.muted}>Tiempo restante total: {formatClock(timer.totalRemainingSec)}</Text>
+      </View>
+
+      <View style={styles.controls}>
+        <Pressable style={styles.secondaryButton} onPress={confirmExit}>
+          <Ionicons name="close" size={20} color={colors.text} />
+          <Text style={styles.secondaryText}>Salir</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.primaryButton, { backgroundColor: phaseColor }]}
+          onPress={timer.paused ? timer.resume : timer.pause}
+        >
+          <Ionicons name={timer.paused ? 'play' : 'pause'} size={20} color={colors.surface} />
+          <Text style={styles.primaryText}>{timer.paused ? 'Reanudar' : 'Pausar'}</Text>
+        </Pressable>
+        <Pressable style={styles.secondaryButton} onPress={timer.skip}>
+          <Ionicons name="play-skip-forward" size={20} color={colors.text} />
+          <Text style={styles.secondaryText}>Saltar</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
-  text: { fontSize: fontSize.lg, color: colors.text },
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.lg,
+    backgroundColor: colors.background,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.background,
+  },
+  message: { fontSize: fontSize.lg, color: colors.text, textAlign: 'center' },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between' },
+  muted: { fontSize: fontSize.sm, color: colors.textMuted },
+  main: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
+  phase: { fontSize: fontSize.lg, fontWeight: '700', textTransform: 'uppercase' },
+  countdown: { fontSize: 72, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  pausedLabel: { fontSize: fontSize.md, color: colors.textMuted },
+  exerciseName: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text, textAlign: 'center' },
+  instructions: { fontSize: fontSize.md, color: colors.text, textAlign: 'center' },
+  card: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+  },
+  nextName: { fontSize: fontSize.md, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
+  controls: { flexDirection: 'row', gap: spacing.sm },
+  primaryButton: {
+    flex: 1.4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radius.md,
+  },
+  primaryText: { fontSize: fontSize.md, fontWeight: '700', color: colors.surface },
+  secondaryButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+  },
+  secondaryText: { fontSize: fontSize.md, fontWeight: '600', color: colors.text },
+  backButton: { flex: 0, paddingHorizontal: spacing.lg },
 });

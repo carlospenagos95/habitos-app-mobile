@@ -26,6 +26,14 @@ export function buildSteps(routine: Routine): SessionStep[] {
   return steps;
 }
 
+/** Segundos a "m:ss" (o "h:mm:ss" desde una hora). */
+export function formatClock(totalSec: number): string {
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = String(totalSec % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+}
+
 export function totalDurationSec(steps: SessionStep[]): number {
   return steps.reduce((sum, step) => sum + step.durationSec, 0);
 }
