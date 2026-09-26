@@ -8,6 +8,7 @@
     "scheme": "buenoshabitos",
     "userInterfaceStyle": "light",
     "android": {
+      "package": "com.buenoshabitos.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -37,6 +38,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e5d0bf08-c2e8-42ce-ad86-add4802908ca"
+      }
     }
   }
 }
