@@ -1,9 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { Alert, AppState, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
-import { getExercise, getRoutine } from '@/db/exercise';
+import { getExercise, getRoutine, getWorkoutHabit } from '@/db/exercise';
+import { markHabitDone } from '@/db/logs';
+import { todayLocal } from '@/date';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
@@ -34,6 +36,17 @@ export default function SesionScreen() {
 function Session({ steps }: { steps: SessionStep[] }) {
   const timer = useSessionTimer(steps);
   useKeepAwake();
+  // Fecha en que empezó la sesión: es la que se registra aunque termine pasada la medianoche.
+  const [startDate] = useState(todayLocal);
+  // null = aún no terminó; true/false = al terminar, si se registró en el hábito vinculado.
+  const [registered, setRegistered] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!timer.finished || registered !== null) return;
+    const habit = getWorkoutHabit();
+    if (habit) markHabitDone(habit.id, startDate);
+    setRegistered(habit != null);
+  }, [timer.finished, registered, startDate]);
 
   // Al salir de primer plano la sesión se pausa; el usuario reanuda a mano al volver.
   const { pause } = timer;
@@ -75,7 +88,27 @@ function Session({ steps }: { steps: SessionStep[] }) {
   if (timer.finished || timer.step == null) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.message}>Sesión terminada.</Text>
+        <Ionicons name="trophy-outline" size={64} color={WORK_COLOR} />
+        <Text style={styles.completedTitle}>¡Rutina completada!</Text>
+        {registered === true && (
+          <View style={styles.registeredRow}>
+            <Ionicons name="checkmark-circle" size={20} color={WORK_COLOR} />
+            <Text style={styles.message}>Registrado en Hoy</Text>
+          </View>
+        )}
+        {registered === false && (
+          <>
+            <Text style={styles.message}>
+              Agrega el hábito 'Rutina de ejercicio en casa 1 hora' en Física para registrar tus sesiones.
+            </Text>
+            <Pressable
+              style={[styles.primaryButton, styles.backButton, { backgroundColor: WORK_COLOR }]}
+              onPress={() => router.replace({ pathname: '/area/[id]', params: { id: 'fisica' } })}
+            >
+              <Text style={styles.primaryText}>Ir a Física</Text>
+            </Pressable>
+          </>
+        )}
         <Pressable style={[styles.secondaryButton, styles.backButton]} onPress={() => router.back()}>
           <Text style={styles.secondaryText}>Volver</Text>
         </Pressable>
@@ -203,4 +236,6 @@ const styles = StyleSheet.create({
   },
   secondaryText: { fontSize: fontSize.md, fontWeight: '600', color: colors.text },
   backButton: { flex: 0, paddingHorizontal: spacing.lg },
+  completedTitle: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text },
+  registeredRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 });
