@@ -6,6 +6,7 @@ import { Alert, AppState, BackHandler, Pressable, StyleSheet, Text, View } from 
 import { getExercise, getRoutine, getWorkoutHabit } from '@/db/exercise';
 import { markHabitDone } from '@/db/logs';
 import { todayLocal } from '@/date';
+import { usePhaseCue } from '@/exercise/cues';
 import { ExerciseImage } from '@/exercise/ExerciseImage';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
@@ -37,6 +38,16 @@ export default function SesionScreen() {
 function Session({ steps }: { steps: SessionStep[] }) {
   const timer = useSessionTimer(steps);
   useKeepAwake();
+  const playCue = usePhaseCue();
+
+  // Sonido y vibración al empezar cada fase de forma automática (incluida la primera).
+  // Saltar, pausar o reanudar no avisan.
+  const { index, startedBy, step: currentStep } = timer;
+  useEffect(() => {
+    if (currentStep && startedBy === 'auto') playCue(currentStep.kind);
+    // Solo al cambiar de paso.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
   // Fecha en que empezó la sesión: es la que se registra aunque termine pasada la medianoche.
   const [startDate] = useState(todayLocal);
   // null = aún no terminó; true/false = al terminar, si se registró en el hábito vinculado.

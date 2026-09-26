@@ -5,7 +5,13 @@ const TICK_MS = 250;
 
 // endAt: timestamp (ms) en que termina el paso actual mientras corre.
 // pausedRemainingMs: ms restantes del paso actual si está en pausa; null = corriendo.
-type TimerState = { index: number; endAt: number; pausedRemainingMs: number | null };
+// startedBy: cómo empezó el paso actual; los avisos solo suenan en 'auto' (no al saltar a mano).
+type TimerState = {
+  index: number;
+  endAt: number;
+  pausedRemainingMs: number | null;
+  startedBy: 'auto' | 'skip';
+};
 
 /** Avanza los pasos vencidos. Encadena desde endAt (no desde "ahora") para no acumular deriva. */
 function advance(state: TimerState, steps: SessionStep[], now: number): TimerState {
@@ -17,7 +23,7 @@ function advance(state: TimerState, steps: SessionStep[], now: number): TimerSta
     index++;
     if (index < steps.length) endAt += steps[index].durationSec * 1000;
   }
-  return { ...state, index, endAt };
+  return { ...state, index, endAt, startedBy: 'auto' };
 }
 
 /**
@@ -29,6 +35,7 @@ export function useSessionTimer(steps: SessionStep[]) {
     index: 0,
     endAt: Date.now() + steps[0].durationSec * 1000,
     pausedRemainingMs: null,
+    startedBy: 'auto',
   }));
   const [now, setNow] = useState(() => Date.now());
 
@@ -70,11 +77,11 @@ export function useSessionTimer(steps: SessionStep[]) {
     () =>
       setState((s) => {
         const index = s.index + 1;
-        if (index >= steps.length) return { index, endAt: Date.now(), pausedRemainingMs: null };
+        if (index >= steps.length) return { index, endAt: Date.now(), pausedRemainingMs: null, startedBy: 'skip' };
         const durationMs = steps[index].durationSec * 1000;
         return s.pausedRemainingMs !== null
-          ? { index, endAt: s.endAt, pausedRemainingMs: durationMs }
-          : { index, endAt: Date.now() + durationMs, pausedRemainingMs: null };
+          ? { index, endAt: s.endAt, pausedRemainingMs: durationMs, startedBy: 'skip' }
+          : { index, endAt: Date.now() + durationMs, pausedRemainingMs: null, startedBy: 'skip' };
       }),
     [steps]
   );
@@ -86,6 +93,7 @@ export function useSessionTimer(steps: SessionStep[]) {
 
   return {
     index: state.index,
+    startedBy: state.startedBy,
     step: finished ? null : steps[state.index],
     finished,
     paused,
