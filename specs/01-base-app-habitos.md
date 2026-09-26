@@ -1,6 +1,6 @@
 # SPEC 01 — App Android base de hábitos por áreas de vida
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** ninguna
 > **Fecha:** 2026-09-20
 > **Objetivo:** Una app Android (React Native + Expo) que permite crear hábitos diarios agrupados en 6 áreas de vida, marcarlos cada día, ver su progreso y recibir recordatorios locales, con todos los datos guardados solo en el teléfono.
