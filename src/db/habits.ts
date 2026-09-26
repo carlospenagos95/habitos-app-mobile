@@ -2,7 +2,7 @@ import { getDb } from './client';
 import { todayLocal } from '../date';
 import type { AreaId, Habit } from '../types';
 
-type HabitRow = {
+export type HabitRow = {
   id: number;
   area_id: string;
   name: string;
@@ -13,7 +13,7 @@ type HabitRow = {
   plan_item_id: string | null;
 };
 
-function rowToHabit(row: HabitRow): Habit {
+export function rowToHabit(row: HabitRow): Habit {
   return {
     id: row.id,
     areaId: row.area_id as AreaId,
