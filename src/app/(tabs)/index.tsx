@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import {
   SectionList,
@@ -11,6 +12,7 @@ import { getAreas } from '@/db/client';
 import { listHabitsByArea } from '@/db/habits';
 import { getLogsForDate, toggleHabitDone } from '@/db/logs';
 import { todayLocal } from '@/date';
+import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 import type { Area, Habit } from '@/types';
 
 const TODAY = todayLocal();
@@ -62,16 +64,26 @@ export default function HoyScreen() {
         <SectionList
           sections={sections}
           keyExtractor={(habit) => String(habit.id)}
-          renderSectionHeader={({ section }) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
-          )}
-          renderItem={({ item }) => {
-            const done = doneIds.has(item.id);
+          stickySectionHeadersEnabled={false}
+          renderSectionHeader={({ section }) => {
+            const { icon, color } = AREA_STYLE[section.area.id];
             return (
-              <TouchableOpacity style={styles.habitRow} onPress={() => handleToggle(item.id)}>
-                <View style={[styles.checkbox, done && styles.checkboxDone]}>
-                  {done && <Text style={styles.checkmark}>✓</Text>}
-                </View>
+              <View style={styles.sectionHeader}>
+                <Ionicons name={icon} size={18} color={color} />
+                <Text style={[styles.sectionHeaderText, { color }]}>{section.title}</Text>
+              </View>
+            );
+          }}
+          renderItem={({ item, section }) => {
+            const done = doneIds.has(item.id);
+            const areaColor = AREA_STYLE[section.area.id].color;
+            return (
+              <TouchableOpacity style={styles.habitCard} onPress={() => handleToggle(item.id)}>
+                <Ionicons
+                  name={done ? 'checkmark-circle' : 'ellipse-outline'}
+                  size={26}
+                  color={done ? areaColor : colors.textMuted}
+                />
                 <Text style={[styles.habitName, done && styles.habitNameDone]}>{item.name}</Text>
               </TouchableOpacity>
             );
@@ -83,44 +95,45 @@ export default function HoyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 60, paddingHorizontal: 16 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 16 },
-  sectionHeader: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#666',
-    textTransform: 'uppercase',
-    marginTop: 16,
-    marginBottom: 8,
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.background,
   },
-  habitRow: {
+  title: { fontSize: fontSize.xl, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
   },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#208AEF',
+  sectionHeaderText: {
+    fontSize: fontSize.sm,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  habitCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
   },
-  checkboxDone: { backgroundColor: '#208AEF' },
-  checkmark: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  habitName: { fontSize: 16 },
-  habitNameDone: { textDecorationLine: 'line-through', color: '#999' },
-  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  emptyText: { fontSize: 16, color: '#666' },
+  habitName: { flex: 1, fontSize: fontSize.md, color: colors.text },
+  habitNameDone: { textDecorationLine: 'line-through', color: colors.textMuted },
+  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
+  emptyText: { fontSize: fontSize.md, color: colors.textMuted },
   emptyButton: {
-    backgroundColor: '#208AEF',
-    borderRadius: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  emptyButtonText: { color: '#fff', fontWeight: '600' },
+  emptyButtonText: { color: colors.surface, fontWeight: '600' },
 });
