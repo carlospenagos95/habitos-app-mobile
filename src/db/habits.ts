@@ -27,7 +27,7 @@ function rowToHabit(row: HabitRow): Habit {
 }
 
 /** Crea un hábito en un área. Rechaza nombres vacíos o solo espacios. */
-export function createHabit(areaId: AreaId, name: string): Habit {
+export function createHabit(areaId: AreaId, name: string, planItemId: string | null = null): Habit {
   const trimmedName = name.trim();
   if (trimmedName.length === 0) {
     throw new Error('El nombre del hábito no puede estar vacío.');
@@ -36,8 +36,8 @@ export function createHabit(areaId: AreaId, name: string): Habit {
   const db = getDb();
   const createdAt = todayLocal();
   const result = db.runSync(
-    'INSERT INTO habits (area_id, name, reminder_time, notification_id, archived, created_at) VALUES (?, ?, NULL, NULL, 0, ?)',
-    [areaId, trimmedName, createdAt]
+    'INSERT INTO habits (area_id, name, reminder_time, notification_id, archived, created_at, plan_item_id) VALUES (?, ?, NULL, NULL, 0, ?, ?)',
+    [areaId, trimmedName, createdAt, planItemId]
   );
 
   return {
@@ -48,7 +48,7 @@ export function createHabit(areaId: AreaId, name: string): Habit {
     notificationId: null,
     archived: false,
     createdAt,
-    planItemId: null,
+    planItemId,
   };
 }
 
