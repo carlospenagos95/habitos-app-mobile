@@ -1,6 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getAreas } from '@/db/client';
+import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 
 export default function AreasScreen() {
   const router = useRouter();
@@ -12,26 +14,43 @@ export default function AreasScreen() {
       <FlatList
         data={areas}
         keyExtractor={(area) => area.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.row}
-            onPress={() => router.push({ pathname: '/area/[id]', params: { id: item.id } })}
-          >
-            <Text style={styles.rowText}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => {
+          const { icon, color } = AREA_STYLE[item.id];
+          return (
+            <TouchableOpacity
+              style={[styles.card, { borderLeftColor: color }]}
+              onPress={() => router.push({ pathname: '/area/[id]', params: { id: item.id } })}
+            >
+              <Ionicons name={icon} size={24} color={color} />
+              <Text style={styles.cardText}>{item.name}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 60, paddingHorizontal: 16 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 16 },
-  row: {
-    paddingVertical: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.background,
   },
-  rowText: { fontSize: 18 },
+  title: { fontSize: fontSize.xl, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    borderLeftWidth: 4,
+  },
+  cardText: { flex: 1, fontSize: fontSize.lg, color: colors.text },
 });
