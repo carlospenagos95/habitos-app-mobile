@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
@@ -23,6 +24,7 @@ import {
   requestNotificationPermission,
   scheduleHabitReminder,
 } from '@/notifications';
+import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 import type { AreaId, Habit } from '@/types';
 
 function formatTime(date: Date): string {
@@ -60,6 +62,7 @@ export default function AreaDetailScreen() {
   const areaId = id as AreaId;
   const router = useRouter();
   const area = getAreas().find((a) => a.id === areaId);
+  const areaStyle = AREA_STYLE[areaId];
 
   const [habits, setHabits] = useState<Habit[]>([]);
   const [newHabitName, setNewHabitName] = useState('');
@@ -159,7 +162,12 @@ export default function AreaDetailScreen() {
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.back}>‹ Áreas</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>{area?.name ?? ''}</Text>
+      <View style={styles.header}>
+        {areaStyle != null && (
+          <Ionicons name={areaStyle.icon} size={28} color={areaStyle.color} />
+        )}
+        <Text style={styles.title}>{area?.name ?? ''}</Text>
+      </View>
 
       <View style={styles.form}>
         <TextInput
@@ -272,47 +280,66 @@ export default function AreaDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 60, paddingHorizontal: 16 },
-  back: { fontSize: 16, color: '#208AEF', marginBottom: 8 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 16 },
-  form: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.background,
+  },
+  back: { fontSize: fontSize.md, color: colors.primary, marginBottom: spacing.sm },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  title: { fontSize: fontSize.xl, fontWeight: '600', color: colors.text },
+  form: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
   input: {
     flex: 1,
+    backgroundColor: colors.surface,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#999',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: fontSize.md,
+    color: colors.text,
   },
   addButton: {
-    backgroundColor: '#208AEF',
-    borderRadius: 6,
-    paddingHorizontal: 14,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
     justifyContent: 'center',
   },
-  addButtonText: { color: '#fff', fontWeight: '600' },
+  addButtonText: { color: colors.surface, fontWeight: '600' },
   reminderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
-  error: { color: '#c00', marginBottom: 8 },
-  warning: { color: '#b06500', marginBottom: 8 },
-  empty: { color: '#666', marginTop: 16 },
+  error: { color: colors.error, marginBottom: spacing.sm },
+  warning: { color: colors.warning, marginBottom: spacing.sm },
+  empty: { color: colors.textMuted, marginTop: spacing.md },
   habitBlock: {
-    paddingVertical: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+    padding: spacing.md,
+    paddingBottom: spacing.sm,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
   },
   habitRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
+    marginBottom: spacing.sm,
   },
   habitInfo: { flex: 1 },
-  habitName: { fontSize: 16 },
-  habitReminder: { fontSize: 13, color: '#666' },
-  editInput: { paddingVertical: 4 },
-  action: { color: '#208AEF', fontWeight: '600' },
+  habitName: { fontSize: fontSize.md, color: colors.text },
+  habitReminder: { fontSize: fontSize.sm, color: colors.textMuted },
+  editInput: { paddingVertical: spacing.xs },
+  action: { color: colors.primary, fontWeight: '600' },
 });
