@@ -10,6 +10,7 @@ type HabitRow = {
   notification_id: string | null;
   archived: number;
   created_at: string;
+  plan_item_id: string | null;
 };
 
 function rowToHabit(row: HabitRow): Habit {
@@ -21,6 +22,7 @@ function rowToHabit(row: HabitRow): Habit {
     notificationId: row.notification_id,
     archived: row.archived === 1,
     createdAt: row.created_at,
+    planItemId: row.plan_item_id,
   };
 }
 
@@ -46,6 +48,7 @@ export function createHabit(areaId: AreaId, name: string): Habit {
     notificationId: null,
     archived: false,
     createdAt,
+    planItemId: null,
   };
 }
 

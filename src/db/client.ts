@@ -1,8 +1,7 @@
 import * as SQLite from 'expo-sqlite';
-import type { Area } from '../types';
+import type { Area, AreaId } from '../types';
 
 const DB_NAME = 'habitos.db';
-const SCHEMA_VERSION = 1;
 
 const SEED_AREAS: Area[] = [
   { id: 'espiritual', name: 'Espiritual', sortOrder: 0 },
@@ -12,6 +11,46 @@ const SEED_AREAS: Area[] = [
   { id: 'laboral', name: 'Laboral', sortOrder: 4 },
   { id: 'emocional', name: 'Emocional', sortOrder: 5 },
 ];
+
+// Catálogo del plan de rutina (migración v2). id = "<areaId>-<n>", n = sort_order + 1.
+const SEED_PLAN: Record<AreaId, string[]> = {
+  espiritual: [
+    'Meditar 10 minutos',
+    'Leer un texto espiritual 10 minutos',
+    'Escribir 3 cosas por las que agradezco',
+    '5 minutos de silencio antes de dormir',
+  ],
+  fisica: [
+    'Caminar 30 minutos',
+    'Tomar 2 litros de agua',
+    'Dormir 7 horas o más',
+    'Estirar 10 minutos',
+  ],
+  intelectual: [
+    'Leer 20 páginas',
+    'Estudiar un tema nuevo 30 minutos',
+    'Escuchar un podcast educativo',
+    'Escribir un resumen de lo aprendido',
+  ],
+  familiar: [
+    'Comer sin pantallas con la familia',
+    'Llamar o escribir a un familiar',
+    '15 minutos de conversación sin celular',
+    'Planear una actividad familiar semanal',
+  ],
+  laboral: [
+    'Definir las 3 prioridades del día',
+    'Trabajar 90 minutos sin distracciones',
+    'Revisar pendientes al cerrar el día',
+    'Aprender algo de mi oficio 15 minutos',
+  ],
+  emocional: [
+    'Registrar cómo me siento hoy',
+    'Respirar profundo 5 minutos',
+    'Hacer algo que disfruto 20 minutos',
+    'Revisar el día sin juzgarme',
+  ],
+};
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -58,7 +97,42 @@ function migrate(database: SQLite.SQLiteDatabase): void {
       insertArea.finalizeSync();
     }
 
-    database.execSync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+    database.execSync('PRAGMA user_version = 1');
+  }
+
+  if (currentVersion < 2) {
+    // En una transacción: si algo falla, la base queda en v1 y se reintenta en el próximo arranque.
+    database.withTransactionSync(() => {
+      database.execSync(`
+        CREATE TABLE plan_items (
+          id TEXT PRIMARY KEY,
+          area_id TEXT NOT NULL REFERENCES areas(id),
+          name TEXT NOT NULL,
+          sort_order INTEGER NOT NULL
+        );
+        ALTER TABLE habits ADD COLUMN plan_item_id TEXT REFERENCES plan_items(id);
+      `);
+
+      const insertPlanItem = database.prepareSync(
+        'INSERT INTO plan_items (id, area_id, name, sort_order) VALUES ($id, $areaId, $name, $sortOrder)'
+      );
+      try {
+        for (const [areaId, names] of Object.entries(SEED_PLAN)) {
+          names.forEach((name, sortOrder) => {
+            insertPlanItem.executeSync({
+              $id: `${areaId}-${sortOrder + 1}`,
+              $areaId: areaId,
+              $name: name,
+              $sortOrder: sortOrder,
+            });
+          });
+        }
+      } finally {
+        insertPlanItem.finalizeSync();
+      }
+
+      database.execSync('PRAGMA user_version = 2');
+    });
   }
 }
 
