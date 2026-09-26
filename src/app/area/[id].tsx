@@ -24,8 +24,9 @@ import {
   requestNotificationPermission,
   scheduleHabitReminder,
 } from '@/notifications';
+import { addHabitFromPlan, listSuggestions } from '@/db/plan';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
-import type { AreaId, Habit } from '@/types';
+import type { AreaId, Habit, PlanItem } from '@/types';
 
 function formatTime(date: Date): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -73,8 +74,12 @@ export default function AreaDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [reminderWarning, setReminderWarning] = useState<string | null>(null);
   const [reminderEditingId, setReminderEditingId] = useState<number | null>(null);
+  const [suggestions, setSuggestions] = useState<PlanItem[]>([]);
 
-  const reload = () => setHabits(listHabitsByArea(areaId));
+  const reload = () => {
+    setHabits(listHabitsByArea(areaId));
+    setSuggestions(listSuggestions(areaId));
+  };
 
   useEffect(() => {
     reload();
@@ -96,6 +101,16 @@ export default function AreaDetailScreen() {
       reload();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al crear el hábito.');
+    }
+  };
+
+  const handleAddSuggestion = (planItemId: string) => {
+    try {
+      addHabitFromPlan(planItemId);
+      setError(null);
+      reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al agregar la sugerencia.');
     }
   };
 
@@ -212,6 +227,23 @@ export default function AreaDetailScreen() {
         data={habits}
         keyExtractor={(habit) => String(habit.id)}
         ListEmptyComponent={<Text style={styles.empty}>Sin hábitos todavía.</Text>}
+        ListFooterComponent={
+          <View style={styles.suggestions}>
+            <Text style={styles.sectionTitle}>Sugerencias del plan</Text>
+            {suggestions.length === 0 ? (
+              <Text style={styles.empty}>Ya agregaste todas las sugerencias de esta área.</Text>
+            ) : (
+              suggestions.map((suggestion) => (
+                <View key={suggestion.id} style={styles.suggestionCard}>
+                  <Text style={styles.habitName}>{suggestion.name}</Text>
+                  <TouchableOpacity onPress={() => handleAddSuggestion(suggestion.id)}>
+                    <Text style={styles.action}>Agregar</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+          </View>
+        }
         renderItem={({ item }) =>
           editingId === item.id ? (
             <View style={styles.habitBlock}>
@@ -342,4 +374,24 @@ const styles = StyleSheet.create({
   habitReminder: { fontSize: fontSize.sm, color: colors.textMuted },
   editInput: { paddingVertical: spacing.xs },
   action: { color: colors.primary, fontWeight: '600' },
+  suggestions: { marginTop: spacing.lg, paddingBottom: spacing.lg },
+  sectionTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: '700',
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    marginBottom: spacing.sm,
+  },
+  suggestionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+  },
 });
