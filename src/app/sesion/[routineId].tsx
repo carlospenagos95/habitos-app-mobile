@@ -6,6 +6,7 @@ import { Alert, AppState, BackHandler, Pressable, StyleSheet, Text, View } from 
 import { getExercise, getRoutine, getWorkoutHabit } from '@/db/exercise';
 import { markHabitDone } from '@/db/logs';
 import { todayLocal } from '@/date';
+import { ExerciseImage } from '@/exercise/ExerciseImage';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
@@ -140,6 +141,8 @@ function Session({ steps }: { steps: SessionStep[] }) {
         <Text style={[styles.countdown, { color: phaseColor }]}>{formatClock(timer.remainingSec)}</Text>
         {timer.paused && <Text style={styles.pausedLabel}>En pausa</Text>}
 
+        {/* Descanso entre rondas (exerciseId null): sin imagen, solo "Descanso". */}
+        {step.exerciseId && <ExerciseImage exerciseId={step.exerciseId} paused={timer.paused} />}
         {isWork ? (
           <>
             <Text style={styles.exerciseName}>{exercise?.name ?? step.exerciseId}</Text>
