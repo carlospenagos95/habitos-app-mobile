@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { getAreas } from '@/db/client';
+import { getRoutineForWeekday, WORKOUT_PLAN_ITEM_ID } from '@/db/exercise';
 import { listHabitsByArea } from '@/db/habits';
 import { getLogsForDate, toggleHabitDone } from '@/db/logs';
 import { todayLocal } from '@/date';
@@ -43,6 +44,11 @@ export default function HoyScreen() {
   const handleToggle = (habitId: number) => {
     toggleHabitDone(habitId, TODAY);
     reload();
+  };
+
+  const startWorkout = () => {
+    const routine = getRoutineForWeekday(new Date().getDay());
+    if (routine) router.push({ pathname: '/sesion/[routineId]', params: { routineId: routine.id } });
   };
 
   const isEmpty = sections.length === 0;
@@ -85,6 +91,11 @@ export default function HoyScreen() {
                   color={done ? areaColor : colors.textMuted}
                 />
                 <Text style={[styles.habitName, done && styles.habitNameDone]}>{item.name}</Text>
+                {item.planItemId === WORKOUT_PLAN_ITEM_ID && (
+                  <TouchableOpacity onPress={startWorkout} hitSlop={spacing.sm} accessibilityLabel="Empezar rutina">
+                    <Ionicons name="play-circle-outline" size={30} color={AREA_STYLE.fisica.color} />
+                  </TouchableOpacity>
+                )}
               </TouchableOpacity>
             );
           }}
