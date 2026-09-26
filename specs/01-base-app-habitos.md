@@ -118,21 +118,21 @@ Convenciones:
 
 ## Criterios de aceptación
 
-- [ ] La app arranca en un dispositivo Android (Expo Go) sin errores en consola.
-- [ ] Existen exactamente 6 áreas: espiritual, física, intelectual, familiar, laboral, emocional, en ese orden.
-- [ ] Se puede crear un hábito en cualquier área con nombre no vacío; nombre vacío es rechazado.
-- [ ] Un hábito nuevo aparece en Hoy bajo su área.
-- [ ] Tocar un hábito en Hoy lo marca hecho; tocarlo otra vez lo desmarca.
-- [ ] Cerrar y reabrir la app conserva hábitos y marcas del día.
-- [ ] Archivar un hábito lo quita de Hoy y de Progreso, sin borrar sus logs de la base.
-- [ ] Un hábito hecho hoy y ayer muestra racha 2; si hoy no está hecho y ayer sí, la racha cuenta desde ayer.
-- [ ] El % de un área con 2 hábitos, ambos creados hace 7 días o más, y 7 logs en total, muestra 50 %.
-- [ ] Un área sin hábitos activos muestra `—` en Progreso.
-- [ ] Un hábito con hora de recordatorio dispara una notificación local a esa hora, todos los días.
-- [ ] Al archivar un hábito o quitarle la hora, deja de llegar su notificación.
-- [ ] Si el usuario niega el permiso de notificaciones, los hábitos se guardan igual y la app avisa que los recordatorios están desactivados.
-- [ ] Todos los textos visibles están en español.
-- [ ] `PRAGMA user_version` devuelve `1` tras la primera ejecución.
+- [X] La app arranca en un dispositivo Android (Expo Go) sin errores en consola.
+- [X] Existen exactamente 6 áreas: espiritual, física, intelectual, familiar, laboral, emocional, en ese orden.
+- [X] Se puede crear un hábito en cualquier área con nombre no vacío; nombre vacío es rechazado.
+- [X] Un hábito nuevo aparece en Hoy bajo su área.
+- [X] Tocar un hábito en Hoy lo marca hecho; tocarlo otra vez lo desmarca.
+- [X] Cerrar y reabrir la app conserva hábitos y marcas del día.
+- [X] Archivar un hábito lo quita de Hoy y de Progreso, sin borrar sus logs de la base.
+- [X] Un hábito hecho hoy y ayer muestra racha 2; si hoy no está hecho y ayer sí, la racha cuenta desde ayer.
+- [X] El % de un área con 2 hábitos, ambos creados hace 7 días o más, y 7 logs en total, muestra 50 %.
+- [X] Un área sin hábitos activos muestra `—` en Progreso.
+- [X] Un hábito con hora de recordatorio dispara una notificación local a esa hora, todos los días.
+- [X] Al archivar un hábito o quitarle la hora, deja de llegar su notificación.
+- [X] Si el usuario niega el permiso de notificaciones, los hábitos se guardan igual y la app avisa que los recordatorios están desactivados.
+- [X] Todos los textos visibles están en español.
+- [X] `PRAGMA user_version` devuelve `1` tras la primera ejecución.
 
 ---
 

@@ -19,6 +19,7 @@ import {
 } from '@/db/habits';
 import {
   cancelHabitReminder,
+  isNotificationSchedulingUnsupported,
   requestNotificationPermission,
   scheduleHabitReminder,
 } from '@/notifications';
@@ -26,6 +27,32 @@ import type { AreaId, Habit } from '@/types';
 
 function formatTime(date: Date): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+const EXPO_GO_WARNING =
+  'Los recordatorios locales no funcionan en Expo Go (SDK 53+). La hora queda guardada; usa un development build para que suenen.';
+const PERMISSION_DENIED_WARNING =
+  'Los recordatorios están desactivados: no diste permiso de notificaciones.';
+
+/** Agenda (o no) el recordatorio de un hábito y devuelve el aviso a mostrar, si aplica. */
+async function trySetReminder(
+  habit: { id: number; name: string },
+  time: string
+): Promise<string | null> {
+  if (isNotificationSchedulingUnsupported()) {
+    setHabitReminder(habit.id, time, null);
+    return EXPO_GO_WARNING;
+  }
+
+  const granted = await requestNotificationPermission();
+  if (granted) {
+    const notificationId = await scheduleHabitReminder(habit.name, time);
+    setHabitReminder(habit.id, time, notificationId);
+    return null;
+  }
+
+  setHabitReminder(habit.id, time, null);
+  return PERMISSION_DENIED_WARNING;
 }
 
 export default function AreaDetailScreen() {
@@ -58,18 +85,8 @@ export default function AreaDetailScreen() {
       setError(null);
 
       if (reminderDate != null) {
-        const time = formatTime(reminderDate);
-        const granted = await requestNotificationPermission();
-        if (granted) {
-          const notificationId = await scheduleHabitReminder(habit.name, time);
-          setHabitReminder(habit.id, time, notificationId);
-          setReminderWarning(null);
-        } else {
-          setHabitReminder(habit.id, time, null);
-          setReminderWarning(
-            'Los recordatorios están desactivados: no diste permiso de notificaciones.'
-          );
-        }
+        const warning = await trySetReminder(habit, formatTime(reminderDate));
+        setReminderWarning(warning);
         setReminderDate(null);
       }
 
@@ -119,23 +136,13 @@ export default function AreaDetailScreen() {
 
   const handleReminderChange = async (habit: Habit, date: Date) => {
     setReminderEditingId(null);
-    const time = formatTime(date);
 
     if (habit.notificationId != null) {
       await cancelHabitReminder(habit.notificationId);
     }
 
-    const granted = await requestNotificationPermission();
-    if (granted) {
-      const notificationId = await scheduleHabitReminder(habit.name, time);
-      setHabitReminder(habit.id, time, notificationId);
-      setReminderWarning(null);
-    } else {
-      setHabitReminder(habit.id, time, null);
-      setReminderWarning(
-        'Los recordatorios están desactivados: no diste permiso de notificaciones.'
-      );
-    }
+    const warning = await trySetReminder(habit, formatTime(date));
+    setReminderWarning(warning);
     reload();
   };
 
