@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getAreas } from '@/db/client';
@@ -6,6 +7,7 @@ import { listHabitsByArea } from '@/db/habits';
 import { getLogsForHabit } from '@/db/logs';
 import { todayLocal } from '@/date';
 import { computeAreaCompletion, computeStreak } from '@/streaks';
+import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 import type { Area, Habit } from '@/types';
 
 const TODAY = todayLocal();
@@ -39,52 +41,78 @@ export default function ProgresoScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Progreso</Text>
       <ScrollView>
-        {areasProgress.map(({ area, habits, percentage }) => (
-          <View key={area.id} style={styles.areaBlock}>
-            <View style={styles.areaHeader}>
-              <Text style={styles.areaName}>{area.name}</Text>
-              <Text style={styles.areaPercentage}>
-                {percentage === null ? '—' : `${percentage} %`}
-              </Text>
+        {areasProgress.map(({ area, habits, percentage }) => {
+          const { icon, color } = AREA_STYLE[area.id];
+          return (
+            <View key={area.id} style={styles.card}>
+              <View style={styles.areaHeader}>
+                <Ionicons name={icon} size={22} color={color} />
+                <Text style={styles.areaName}>{area.name}</Text>
+                <Text style={styles.areaPercentage}>
+                  {percentage === null ? '—' : `${percentage} %`}
+                </Text>
+              </View>
+              <View style={styles.barTrack}>
+                {percentage !== null && (
+                  <View style={[styles.barFill, { width: `${percentage}%`, backgroundColor: color }]} />
+                )}
+              </View>
+              {habits.length === 0 ? (
+                <Text style={styles.empty}>Sin hábitos activos.</Text>
+              ) : (
+                habits.map(({ habit, streak }) => (
+                  <View key={habit.id} style={styles.habitRow}>
+                    <Text style={styles.habitName}>{habit.name}</Text>
+                    <Text style={styles.streak}>🔥 {streak}</Text>
+                  </View>
+                ))
+              )}
             </View>
-            {habits.length === 0 ? (
-              <Text style={styles.empty}>Sin hábitos activos.</Text>
-            ) : (
-              habits.map(({ habit, streak }) => (
-                <View key={habit.id} style={styles.habitRow}>
-                  <Text style={styles.habitName}>{habit.name}</Text>
-                  <Text style={styles.streak}>🔥 {streak}</Text>
-                </View>
-              ))
-            )}
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 60, paddingHorizontal: 16 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 16 },
-  areaBlock: { marginBottom: 20 },
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.background,
+  },
+  title: { fontSize: fontSize.xl, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
+  card: {
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+  },
   areaHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
-    paddingBottom: 6,
-    marginBottom: 6,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
-  areaName: { fontSize: 16, fontWeight: '700' },
-  areaPercentage: { fontSize: 16, fontWeight: '700', color: '#208AEF' },
-  empty: { color: '#666', paddingVertical: 4 },
+  areaName: { flex: 1, fontSize: fontSize.md, fontWeight: '700', color: colors.text },
+  areaPercentage: { fontSize: fontSize.md, fontWeight: '700', color: colors.text },
+  barTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.border,
+    overflow: 'hidden',
+    marginBottom: spacing.sm,
+  },
+  barFill: { height: '100%' },
+  empty: { color: colors.textMuted, paddingVertical: spacing.xs },
   habitRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    paddingVertical: spacing.xs,
   },
-  habitName: { fontSize: 15 },
-  streak: { fontSize: 15 },
+  habitName: { flex: 1, fontSize: fontSize.sm, color: colors.text },
+  streak: { fontSize: fontSize.sm, color: colors.text },
 });
