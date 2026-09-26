@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SessionStep } from '../types';
 
 const TICK_MS = 250;
@@ -48,6 +48,37 @@ export function useSessionTimer(steps: SessionStep[]) {
     return result;
   }, [steps]);
 
+  // Estables entre renders: se usan como dependencias de efectos (p. ej. pausa por AppState).
+  const pause = useCallback(
+    () =>
+      setState((s) =>
+        s.pausedRemainingMs !== null ? s : { ...s, pausedRemainingMs: Math.max(0, s.endAt - Date.now()) }
+      ),
+    []
+  );
+
+  const resume = useCallback(
+    () =>
+      setState((s) =>
+        s.pausedRemainingMs === null ? s : { ...s, endAt: Date.now() + s.pausedRemainingMs, pausedRemainingMs: null }
+      ),
+    []
+  );
+
+  /** Termina la fase actual y empieza la siguiente con su duración completa. Respeta la pausa. */
+  const skip = useCallback(
+    () =>
+      setState((s) => {
+        const index = s.index + 1;
+        if (index >= steps.length) return { index, endAt: Date.now(), pausedRemainingMs: null };
+        const durationMs = steps[index].durationSec * 1000;
+        return s.pausedRemainingMs !== null
+          ? { index, endAt: s.endAt, pausedRemainingMs: durationMs }
+          : { index, endAt: Date.now() + durationMs, pausedRemainingMs: null };
+      }),
+    [steps]
+  );
+
   const finished = state.index >= steps.length;
   const paused = state.pausedRemainingMs !== null;
   const remainingMs = paused ? state.pausedRemainingMs! : Math.max(0, state.endAt - now);
@@ -60,23 +91,8 @@ export function useSessionTimer(steps: SessionStep[]) {
     paused,
     remainingSec,
     totalRemainingSec: finished ? 0 : remainingSec + secondsAfter[state.index],
-    pause: () =>
-      setState((s) =>
-        s.pausedRemainingMs !== null ? s : { ...s, pausedRemainingMs: Math.max(0, s.endAt - Date.now()) }
-      ),
-    resume: () =>
-      setState((s) =>
-        s.pausedRemainingMs === null ? s : { ...s, endAt: Date.now() + s.pausedRemainingMs, pausedRemainingMs: null }
-      ),
-    /** Termina la fase actual y empieza la siguiente con su duración completa. Respeta la pausa. */
-    skip: () =>
-      setState((s) => {
-        const index = s.index + 1;
-        if (index >= steps.length) return { index, endAt: Date.now(), pausedRemainingMs: null };
-        const durationMs = steps[index].durationSec * 1000;
-        return s.pausedRemainingMs !== null
-          ? { index, endAt: s.endAt, pausedRemainingMs: durationMs }
-          : { index, endAt: Date.now() + durationMs, pausedRemainingMs: null };
-      }),
+    pause,
+    resume,
+    skip,
   };
 }

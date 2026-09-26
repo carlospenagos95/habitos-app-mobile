@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Alert, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
+import { Alert, AppState, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getExercise, getRoutine } from '@/db/exercise';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
@@ -32,6 +33,16 @@ export default function SesionScreen() {
 
 function Session({ steps }: { steps: SessionStep[] }) {
   const timer = useSessionTimer(steps);
+  useKeepAwake();
+
+  // Al salir de primer plano la sesión se pausa; el usuario reanuda a mano al volver.
+  const { pause } = timer;
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'background' || state === 'inactive') pause();
+    });
+    return () => sub.remove();
+  }, [pause]);
 
   const exercises = useMemo(() => {
     const map = new Map<string, Exercise>();
