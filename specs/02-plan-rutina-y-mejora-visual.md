@@ -1,6 +1,6 @@
 # SPEC 02 — Plan de rutina precargado y mejora visual base
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-25
 > **Objetivo:** Ofrecer en cada área un catálogo de 4 hábitos sugeridos que el usuario agrega con un toque, y dar a la app una apariencia coherente con iconos, color por área y tema centralizado, validando las notificaciones en un development build nativo.
@@ -141,37 +141,37 @@ Convenciones:
 
 **Plan de rutina**
 
-- [ ] `PRAGMA user_version` devuelve `2` tras abrir la app, tanto en instalación nueva como en una que venía de `1`.
-- [ ] Tras actualizar desde `v1`, todos los hábitos y logs previos siguen presentes.
-- [ ] `plan_items` tiene exactamente 24 filas, 4 por área.
-- [ ] En un área sin hábitos del plan, la sección "Sugerencias del plan" muestra 4 sugerencias.
-- [ ] Tocar "Agregar" crea un hábito con ese nombre, `plan_item_id` asignado y `reminder_time` nulo; la sugerencia desaparece de la lista.
-- [ ] El hábito agregado aparece en Hoy bajo su área.
-- [ ] Renombrar un hábito del plan no hace reaparecer su sugerencia.
-- [ ] Archivar un hábito del plan hace reaparecer su sugerencia.
-- [ ] Con las 4 sugerencias agregadas se muestra "Ya agregaste todas las sugerencias de esta área."
-- [ ] Agregar sugerencias no solicita permiso de notificaciones.
+- [X] `PRAGMA user_version` devuelve `2` tras abrir la app, tanto en instalación nueva como en una que venía de `1`.
+- [X] Tras actualizar desde `v1`, todos los hábitos y logs previos siguen presentes.
+- [X] `plan_items` tiene exactamente 24 filas, 4 por área.
+- [X] En un área sin hábitos del plan, la sección "Sugerencias del plan" muestra 4 sugerencias.
+- [x] Tocar "Agregar" crea un hábito con ese nombre, `plan_item_id` asignado y `reminder_time` nulo; la sugerencia desaparece de la lista.
+- [X] El hábito agregado aparece en Hoy bajo su área.
+- [X] Renombrar un hábito del plan no hace reaparecer su sugerencia.
+- [X] Archivar un hábito del plan hace reaparecer su sugerencia.
+- [X] Con las 4 sugerencias agregadas se muestra "Ya agregaste todas las sugerencias de esta área."
+- [X] Agregar sugerencias no solicita permiso de notificaciones.
 
 **Mejora visual**
 
-- [ ] Las pestañas Hoy, Áreas y Progreso muestran su icono; la activa usa `colors.primary`.
-- [ ] Cada una de las 6 áreas muestra su icono y color de la tabla en Áreas, Hoy, Progreso y detalle de área.
-- [ ] En Hoy, un hábito no hecho muestra `ellipse-outline`; hecho muestra `checkmark-circle` en el color de su área.
-- [ ] En Progreso, cada área con % muestra una barra de ancho proporcional al % en el color del área; área con `—` muestra barra vacía.
-- [ ] `grep -rE "#[0-9A-Fa-f]{3,8}\b" src/app` no devuelve resultados (colores solo en `src/theme.ts`).
-- [ ] Con el teléfono en modo oscuro, la app se ve en tema claro.
-- [ ] Todos los textos nuevos están en español.
+- [X] Las pestañas Hoy, Áreas y Progreso muestran su icono; la activa usa `colors.primary`.
+- [X] Cada una de las 6 áreas muestra su icono y color de la tabla en Áreas, Hoy, Progreso y detalle de área.
+- [X] En Hoy, un hábito no hecho muestra `ellipse-outline`; hecho muestra `checkmark-circle` en el color de su área.
+- [X] En Progreso, cada área con % muestra una barra de ancho proporcional al % en el color del área; área con `—` muestra barra vacía.
+- [X] `grep -rE "#[0-9A-Fa-f]{3,8}\b" src/app` no devuelve resultados (colores solo en `src/theme.ts`).
+- [X] Con el teléfono en modo oscuro, la app se ve en tema claro.
+- [X] Todos los textos nuevos están en español.
 
 **Development build y notificaciones (validar en el APK de desarrollo, no en Expo Go)**
 
-- [ ] `eas build --profile development --platform android` termina con éxito y el APK se instala en el teléfono.
-- [ ] El APK abre la app conectada a `npx expo start --dev-client` sin errores en consola.
-- [ ] Hábito con recordatorio a +2 min: la notificación llega con la app en primer plano.
-- [ ] Ídem con la app en segundo plano.
-- [ ] Ídem con la app cerrada (deslizada fuera de recientes).
-- [ ] La notificación vuelve a llegar al día siguiente a la misma hora.
-- [ ] Al archivar el hábito o quitar la hora, la notificación deja de llegar.
-- [ ] Con el permiso de notificaciones denegado, el hábito se guarda y la app avisa que los recordatorios están desactivados.
+- [X] `eas build --profile development --platform android` termina con éxito y el APK se instala en el teléfono.
+- [X] El APK abre la app conectada a `npx expo start --dev-client` sin errores en consola.
+- [X] Hábito con recordatorio a +2 min: la notificación llega con la app en primer plano.
+- [Z] Ídem con la app en segundo plano.
+- [X] Ídem con la app cerrada (deslizada fuera de recientes).
+- [X] La notificación vuelve a llegar al día siguiente a la misma hora.
+- [X] Al archivar el hábito o quitar la hora, la notificación deja de llegar.
+- [X] Con el permiso de notificaciones denegado, el hábito se guarda y la app avisa que los recordatorios están desactivados.
 
 ---
 

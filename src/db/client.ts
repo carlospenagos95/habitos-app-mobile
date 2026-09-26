@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import type { Area, AreaId } from '../types';
+import { SEED_EXERCISES, SEED_ROUTINE_DAYS, SEED_ROUTINES } from './seedExercise';
 
 const DB_NAME = 'habitos.db';
 
@@ -132,6 +133,79 @@ function migrate(database: SQLite.SQLiteDatabase): void {
       }
 
       database.execSync('PRAGMA user_version = 2');
+    });
+  }
+
+  if (currentVersion < 3) {
+    database.withTransactionSync(() => {
+      database.execSync(`
+        CREATE TABLE exercises (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          instructions TEXT NOT NULL
+        );
+        CREATE TABLE routines (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          description TEXT NOT NULL
+        );
+        CREATE TABLE routine_sections (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          routine_id TEXT NOT NULL REFERENCES routines(id),
+          sort_order INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          rounds INTEGER NOT NULL,
+          round_rest_sec INTEGER NOT NULL
+        );
+        CREATE TABLE section_items (
+          section_id INTEGER NOT NULL REFERENCES routine_sections(id),
+          sort_order INTEGER NOT NULL,
+          exercise_id TEXT NOT NULL REFERENCES exercises(id),
+          work_sec INTEGER NOT NULL,
+          rest_sec INTEGER NOT NULL,
+          PRIMARY KEY (section_id, sort_order)
+        );
+        CREATE TABLE routine_days (
+          weekday INTEGER PRIMARY KEY,
+          routine_id TEXT NOT NULL REFERENCES routines(id)
+        );
+        INSERT INTO plan_items (id, area_id, name, sort_order)
+          VALUES ('fisica-5', 'fisica', 'Rutina de ejercicio en casa 1 hora', 4);
+      `);
+
+      for (const e of SEED_EXERCISES) {
+        database.runSync('INSERT INTO exercises (id, name, instructions) VALUES (?, ?, ?)', [
+          e.id,
+          e.name,
+          e.instructions,
+        ]);
+      }
+
+      for (const routine of SEED_ROUTINES) {
+        database.runSync('INSERT INTO routines (id, name, description) VALUES (?, ?, ?)', [
+          routine.id,
+          routine.name,
+          routine.description,
+        ]);
+        routine.sections.forEach((section, sectionOrder) => {
+          const { lastInsertRowId: sectionId } = database.runSync(
+            'INSERT INTO routine_sections (routine_id, sort_order, name, rounds, round_rest_sec) VALUES (?, ?, ?, ?, ?)',
+            [routine.id, sectionOrder, section.name, section.rounds, section.roundRestSec]
+          );
+          section.exerciseIds.forEach((exerciseId, itemOrder) => {
+            database.runSync(
+              'INSERT INTO section_items (section_id, sort_order, exercise_id, work_sec, rest_sec) VALUES (?, ?, ?, ?, ?)',
+              [sectionId, itemOrder, exerciseId, section.workSec, section.restSec]
+            );
+          });
+        });
+      }
+
+      for (const [weekday, routineId] of SEED_ROUTINE_DAYS) {
+        database.runSync('INSERT INTO routine_days (weekday, routine_id) VALUES (?, ?)', [weekday, routineId]);
+      }
+
+      database.execSync('PRAGMA user_version = 3');
     });
   }
 }
