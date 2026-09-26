@@ -28,6 +28,13 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="ejercicio"
+        options={{
+          title: 'Ejercicio',
+          tabBarIcon: ({ color, size }) => <Ionicons name="fitness-outline" color={color} size={size} />,
+        }}
+      />
     </Tabs>
   );
 }

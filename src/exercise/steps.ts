@@ -1,4 +1,10 @@
-import type { Routine, SessionStep } from '../types';
+import type { Routine, RoutineSection, SessionStep } from '../types';
+
+/** Duración de una sección con todas sus rondas, en segundos. */
+export function sectionDurationSec(section: RoutineSection): number {
+  const perRound = section.items.reduce((sum, item) => sum + item.workSec + item.restSec, 0);
+  return section.rounds * perRound + (section.rounds - 1) * section.roundRestSec;
+}
 
 /** Expande una rutina a la lista plana de pasos que recorre la sesión guiada. */
 export function buildSteps(routine: Routine): SessionStep[] {
