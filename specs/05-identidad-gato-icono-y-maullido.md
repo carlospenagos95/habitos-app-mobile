@@ -1,6 +1,6 @@
 # SPEC 05 — Identidad de gato: ícono, splash y notificación con maullido
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 04
 > **Fecha:** 2026-09-27
 > **Objetivo:** Reemplazar el ícono y splash por defecto de Expo por un gato calicó vectorial sobre azul cielo, y hacer que los recordatorios muestren una cara de gato y suenen con un maullido, entregado en un nuevo APK `preview`.
@@ -121,20 +121,20 @@ Conventions:
 
 ## Criterios de aceptación
 
-- [ ] `scripts/gen-cat-icons.py` regenera los 7 PNG sin errores.
-- [ ] Ningún asset de `app.json` apunta a imágenes de la plantilla de Expo.
-- [ ] `assets/sounds/maullido.wav` existe, dura ≤ 2 s y `CREDITS.md` indica licencia CC0 y URL de origen.
-- [ ] `npx tsc --noEmit` termina sin errores.
-- [ ] `eas build --profile preview --platform android` termina con éxito.
-- [ ] El APK se instala encima del anterior sin desinstalar.
-- [ ] En el launcher, el ícono es el gato calicó con collar morado sobre azul cielo con huellitas.
-- [ ] Con íconos temáticos activados (Android 13+), se ve la silueta del gato.
-- [ ] Al abrir la app, el splash muestra el gato sobre azul cielo.
-- [ ] Tras el reset manual, Ajustes > Apps > Buenos Hábitos > Notificaciones muestra solo el canal "Recordatorios de hábitos" nuevo.
-- [ ] Un recordatorio programado a +2 min con la app cerrada suena con el maullido.
-- [ ] Ese recordatorio muestra la cara de gato en la barra de estado.
-- [ ] Un recordatorio que llega con la app abierta también maúlla.
-- [ ] La sesión de ejercicio de SPEC 03 sigue usando `trabajo.wav` y `descanso.wav`.
+- [X] `scripts/gen-cat-icons.py` regenera los 7 PNG sin errores.
+- [X] Ningún asset de `app.json` apunta a imágenes de la plantilla de Expo.
+- [X] `assets/sounds/maullido.wav` existe, dura ≤ 2 s y `CREDITS.md` indica licencia CC0 y URL de origen.
+- [X] `npx tsc --noEmit` termina sin errores.
+- [X] `eas build --profile preview --platform android` termina con éxito.
+- [X] El APK se instala encima del anterior sin desinstalar.
+- [X] En el launcher, el ícono es el gato calicó con collar morado sobre azul cielo con huellitas.
+- [X] Con íconos temáticos activados (Android 13+), se ve la silueta del gato.
+- [X] Al abrir la app, el splash muestra el gato sobre azul cielo.
+- [X] Tras el reset manual, Ajustes > Apps > Buenos Hábitos > Notificaciones muestra solo el canal "Recordatorios de hábitos" nuevo.
+- [X] Un recordatorio programado a +2 min con la app cerrada suena con el maullido.
+- [X] Ese recordatorio muestra la cara de gato en la barra de estado.
+- [X] Un recordatorio que llega con la app abierta también maúlla.
+- [X] La sesión de ejercicio de SPEC 03 sigue usando `trabajo.wav` y `descanso.wav`.
 
 ---
 
