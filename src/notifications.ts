@@ -7,7 +7,9 @@ import Constants, { AppOwnership } from 'expo-constants';
 // gracia: no se agenda nada y se avisa al usuario que los recordatorios están desactivados.
 const isExpoGo = Constants.appOwnership === AppOwnership.Expo;
 
-const ANDROID_CHANNEL_ID = 'habitos-recordatorios';
+// SPEC 05: canal nuevo porque Android no permite cambiar el sonido de un canal ya creado.
+const ANDROID_CHANNEL_ID = 'habitos-maullido';
+const REMINDER_SOUND = 'maullido.wav';
 
 let handlerConfigured = false;
 
@@ -21,7 +23,7 @@ async function loadNotifications() {
       handleNotification: async () => ({
         shouldShowBanner: true,
         shouldShowList: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
       }),
     });
@@ -32,6 +34,7 @@ async function loadNotifications() {
     await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
       name: 'Recordatorios de hábitos',
       importance: Notifications.AndroidImportance.DEFAULT,
+      sound: REMINDER_SOUND,
     });
   }
 
@@ -68,6 +71,7 @@ export async function scheduleHabitReminder(
     content: {
       title: 'Buenos Hábitos',
       body: `Recordatorio: ${habitName}`,
+      sound: REMINDER_SOUND,
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
