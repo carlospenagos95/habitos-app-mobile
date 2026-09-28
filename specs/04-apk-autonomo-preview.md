@@ -1,6 +1,6 @@
 # SPEC 04 — APK autónomo con perfil `preview` de EAS
 
-> **Estado:** Aprobada
+> **Estado:** Implementado
 > **Depende de:** SPEC 02, SPEC 03
 > **Fecha:** 2026-09-27
 > **Objetivo:** Generar desde la cuenta de Expo (EAS Build) un APK de Android autónomo que se instala en el teléfono y funciona sin PC, sin Metro y sin Expo Go.
@@ -83,19 +83,19 @@ Conventions:
 
 ## Criterios de aceptación
 
-- [ ] `eas.json` contiene el perfil `preview` con `distribution: "internal"`, `autoIncrement: true` y `android.buildType: "apk"`.
-- [ ] El perfil `development` queda sin cambios.
-- [ ] `eas build --profile preview --platform android` termina con éxito en la cuenta de Expo.
-- [ ] El build aparece en expo.dev → proyecto `buenos-habitos` → Builds con un `.apk` descargable.
-- [ ] El `versionCode` del build `preview` es mayor que el del último development build.
-- [ ] El APK se instala encima del development build sin desinstalar.
-- [ ] Tras instalarlo, los hábitos y registros creados antes siguen presentes.
-- [ ] Con el PC apagado y el teléfono en modo avión, la app abre y muestra la pestaña Hoy.
-- [ ] La app no muestra la pantalla del dev launcher ni pide conectar con un servidor.
-- [ ] Marcar un hábito como hecho persiste tras cerrar y reabrir la app.
-- [ ] Un recordatorio programado a 2 minutos dispara la notificación con la app cerrada.
-- [ ] Una sesión de la rutina de SPEC 03 reproduce sonido, vibra y mantiene la pantalla encendida.
-- [ ] Las imágenes de ejercicios de SPEC 03 se ven sin conexión.
+- [X] `eas.json` contiene el perfil `preview` con `distribution: "internal"`, `autoIncrement: true` y `android.buildType: "apk"`.
+- [X] El perfil `development` queda sin cambios.
+- [X] `eas build --profile preview --platform android` termina con éxito en la cuenta de Expo.
+- [X] El build aparece en expo.dev → proyecto `buenos-habitos` → Builds con un `.apk` descargable.
+- [X] El `versionCode` del build `preview` es mayor que el del último development build.
+- [X] El APK se instala encima del development build sin desinstalar.
+- [X] Tras instalarlo, los hábitos y registros creados antes siguen presentes.
+- [X] Con el PC apagado y el teléfono en modo avión, la app abre y muestra la pestaña Hoy.
+- [X] La app no muestra la pantalla del dev launcher ni pide conectar con un servidor.
+- [X] Marcar un hábito como hecho persiste tras cerrar y reabrir la app.
+- [X] Un recordatorio programado a 2 minutos dispara la notificación con la app cerrada.
+- [X] Una sesión de la rutina de SPEC 03 reproduce sonido, vibra y mantiene la pantalla encendida.
+- [X] Las imágenes de ejercicios de SPEC 03 se ven sin conexión.
 
 ---
 
