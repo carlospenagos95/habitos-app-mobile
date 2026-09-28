@@ -1,6 +1,6 @@
 # SPEC 03 — Rutina de ejercicio en casa de 1 hora
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-09-26
 > **Objetivo:** Ofrecer cada día una rutina de ejercicio en casa de 60 minutos, sin equipo, que el usuario sigue en una sesión guiada con temporizador, imágenes, sonido y vibración, y que al terminarse marca como hecho el hábito vinculado del área Física.
