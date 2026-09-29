@@ -51,6 +51,14 @@ App Android (React Native + Expo) para construir hábitos diarios en 6 áreas de
 - Splash con el gato sobre azul cielo.
 - Los recordatorios muestran una cara de gato en la barra de estado y suenan con un maullido.
 
+**Rediseño "Michi compañero"** (SPEC 07)
+
+- Tema nuevo: fondo crema, cabeceras azul cielo con huellitas, morado del collar como acento y fuentes Fredoka (títulos) y Nunito (texto) empaquetadas, sin conexión.
+- Gato calicó dibujado en SVG con curvas y degradados, en 4 poses: sentado (Hoy), asomado (Áreas), con trofeo (Progreso) y estirado (Ejercicio).
+- Animado con Reanimated: parpadea, respira, mueve la cola y la oreja. Salta con ojos felices al marcar un hábito y celebra con huellitas y corazones al completar el día.
+- Al tocarlo ronronea (máx. uno cada 2 s) y cambia su mensaje. Con "Quitar animaciones" de Android queda quieto.
+- Hoy con fecha larga, progreso con huella y atajo a la rutina; Áreas en cuadrícula con el área foco del día; Progreso con mejor racha y huellitas de la semana; Ejercicio con la tira "Esta semana".
+
 ---
 
 ## Stack
@@ -62,6 +70,8 @@ App Android (React Native + Expo) para construir hábitos diarios en 6 áreas de
 | Persistencia | `expo-sqlite` (síncrono, migraciones con `PRAGMA user_version`) |
 | Notificaciones | `expo-notifications` (locales, diarias) |
 | Audio | `expo-audio` |
+| Gráficos y animación | `react-native-svg`, `react-native-reanimated` |
+| Tipografía | `@expo-google-fonts/fredoka`, `@expo-google-fonts/nunito` (empaquetadas con `expo-font`) |
 | Imágenes | `expo-image` |
 | Otros nativos | `expo-keep-awake`, `Vibration`, `@react-native-community/datetimepicker` |
 | Build | EAS Build (`development`, `preview`) |
@@ -73,7 +83,7 @@ App Android (React Native + Expo) para construir hábitos diarios en 6 áreas de
 ```
 src/
 ├── app/                       Pantallas (expo-router)
-│   ├── _layout.tsx            Stack raíz
+│   ├── _layout.tsx            Stack raíz; carga de fuentes con splash
 │   ├── (tabs)/
 │   │   ├── _layout.tsx        Barra de pestañas
 │   │   ├── index.tsx          Hoy
@@ -95,10 +105,19 @@ src/
 │   ├── cues.ts                Sonido + vibración por fase
 │   ├── ExerciseImage.tsx      Animación de 2 imágenes por ejercicio
 │   └── images.ts              Mapa estático de require() (generado)
+├── cat/                       El gato (SPEC 07)
+│   ├── Cat.tsx                <Cat pose mood size onPress />: 4 poses
+│   ├── parts.tsx              Piezas SVG compartidas (cabeza, ojos, orejas, cola…)
+│   ├── useCatAnimation.ts     Idle, reacciones y useCatMood; respeta "Reducir movimiento"
+│   ├── Celebration.tsx        Huellitas y corazones al completar el día
+│   ├── messages.ts            Frases por pantalla y estado
+│   ├── purr.ts                Ronroneo con anti-spam de 2 s
+│   └── palette.ts, types.ts   Colores y tipos del gato
+├── ui/                        Componentes compartidos: cabecera, globo, huella, fila de hábito, barra, pestaña
 ├── notifications.ts           Permisos, canal Android y recordatorios diarios
 ├── streaks.ts                 Rachas y % de cumplimiento
-├── date.ts                    Fechas locales "YYYY-MM-DD"
-├── theme.ts                   Colores, espaciados, estilo por área
+├── date.ts                    Fechas locales "YYYY-MM-DD" y fecha larga en español
+├── theme.ts                   Colores, radios, fuentes, estilo por área
 └── types.ts                   Tipos de dominio
 ```
 
@@ -133,7 +152,7 @@ Las migraciones corren al abrir la base, en transacción, y solo si `PRAGMA user
 | `scripts/fetch-exercise-images.mjs` | `assets/exercises/<id>/{0,1}.jpg` (free-exercise-db, Unlicense) y `src/exercise/images.ts` |
 | `scripts/gen-beeps.mjs` | `assets/sounds/trabajo.wav`, `assets/sounds/descanso.wav` |
 | `scripts/gen-cat-icons.py` | Íconos de app, adaptativos, monocromo, splash, notificación y favicon (requiere Pillow) |
-| `scripts/trim-meow.py` | `assets/sounds/maullido.wav` desde el WAV CC0 de freesound |
+| `scripts/trim-meow.py` | Sin argumentos: `assets/sounds/maullido.wav`. Con `entrada salida inicio fin`: cualquier recorte, p. ej. `assets/sounds/ronroneo.wav` (WAV CC0 de freesound) |
 
 Créditos de sonidos en `assets/sounds/CREDITS.md`.
 
@@ -182,3 +201,4 @@ Cada funcionalidad se define primero en una spec en `specs/` y luego se implemen
 | [04](specs/04-apk-autonomo-preview.md) | APK autónomo con perfil `preview` |
 | [05](specs/05-identidad-gato-icono-y-maullido.md) | Identidad de gato: ícono, splash y maullido |
 | [06](specs/06-auditoria-seguridad-y-endurecimiento.md) | Auditoría de seguridad y endurecimiento |
+| [07](specs/07-rediseno-michi-companero.md) | Rediseño "Michi compañero" con gato animado |

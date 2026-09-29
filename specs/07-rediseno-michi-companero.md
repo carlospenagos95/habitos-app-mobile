@@ -178,42 +178,42 @@ src/ui/
 13. Rediseñar `src/app/(tabs)/progreso.tsx`: Mejor racha con gato trofeo, Por área, Huellitas de la semana con racha.
 14. Rediseñar `src/app/(tabs)/ejercicio.tsx`: cabecera con gato estirado, tarjeta de rutina, botón "Empezar sesión", tira "Esta semana".
 15. Aplicar el tema nuevo a `src/app/area/[id].tsx` y `src/app/sesion/[routineId].tsx` sin cambiar su lógica.
-16. Actualizar `README.md`: características SPEC 06, stack (`react-native-svg`, fuentes), script de sonido y fila en la tabla de specs.
+16. Actualizar `README.md`: características SPEC 07, stack (`react-native-svg`, fuentes), script de sonido y fila en la tabla de specs.
 17. Lanzar `eas build --profile preview --platform android` e instalar encima del APK de SPEC 05.
 
 ---
 
 ## Criterios de aceptación
 
-- [ ] `npx tsc --noEmit` termina sin errores.
-- [ ] `eas build --profile preview --platform android` termina con éxito y el APK se instala encima sin perder hábitos ni registros.
-- [ ] Títulos se ven en Fredoka y textos en Nunito, también sin conexión.
-- [ ] El fondo de las pantallas es `#FFF8EE` y las cabeceras de las 4 pestañas son azul cielo con huellitas.
+- [X] `npx tsc --noEmit` termina sin errores.
+- [X] `eas build --profile preview --platform android` termina con éxito y el APK se instala encima sin perder hábitos ni registros.
+- [X] Títulos se ven en Fredoka y textos en Nunito, también sin conexión.
+- [X] El fondo de las pantallas es `#FFF8EE` y las cabeceras de las 4 pestañas son azul cielo con huellitas.
 - [ ] La pestaña activa se muestra en morado con píldora de fondo.
-- [ ] Ningún gato usa triángulos rectos ni trazo grueso: orejas, cabeza y cuerpo son curvas y el pelaje tiene degradado.
-- [ ] Hoy muestra el gato sentado, Áreas el asomado, Progreso el de trofeo y Ejercicio el estirado.
-- [ ] Con la app abierta, el gato parpadea, respira y mueve la cola sin interacción.
-- [ ] Con "Quitar animaciones" activo en Android, el gato no se mueve.
-- [ ] Marcar un hábito en Hoy hace saltar al gato con ojos felices.
-- [ ] Marcar el último hábito pendiente del día muestra la celebración con huellitas/corazones.
-- [ ] Abrir Hoy con el día ya al 100 % no dispara la celebración.
-- [ ] Tocar al gato en cualquiera de las 4 pestañas reproduce el ronroneo y cambia el mensaje del globo.
-- [ ] Tocar al gato 5 veces seguidas en 1 s produce un solo ronroneo.
-- [ ] `assets/sounds/ronroneo.wav` dura ≤ 2 s y `CREDITS.md` indica licencia CC0 y URL de origen.
-- [ ] `python scripts/trim-meow.py` sin argumentos sigue generando `maullido.wav` igual que antes.
-- [ ] El globo de Hoy muestra "X de Y" coherente con la tarjeta de progreso.
-- [ ] Hoy muestra la fecha con formato "Lunes 28 de septiembre".
-- [ ] En Áreas, el área destacada es la de menor proporción hecha hoy entre las que tienen pendientes, y muestra "Te falta K hoy".
-- [ ] En Áreas, con todos los hábitos hechos, ninguna tarjeta se destaca.
-- [ ] Tocar una tarjeta de Áreas abre su detalle.
-- [ ] Progreso muestra en "Mejor racha" el hábito con mayor racha actual y su número de días.
-- [ ] Progreso lista todos los hábitos activos con 7 huellas y su racha actual.
-- [ ] Los porcentajes de "Por área" coinciden con los de la versión anterior de Progreso.
-- [ ] Ejercicio muestra la tira L–D con A, B, C, A, B, C, D y resalta el día actual.
-- [ ] "Empezar sesión" abre la sesión guiada de la rutina del día.
-- [ ] Detalle de área y sesión guiada usan colores y fuentes nuevas y conservan todas sus funciones.
-- [ ] Los recordatorios siguen sonando con el maullido de SPEC 05.
-- [ ] README incluye SPEC 06 en características y en la tabla de specs.
+- [X] Ningún gato usa triángulos rectos ni trazo grueso: orejas, cabeza y cuerpo son curvas y el pelaje tiene degradado.
+- [X] Hoy muestra el gato sentado, Áreas el asomado, Progreso el de trofeo y Ejercicio el estirado.
+- [X] Con la app abierta, el gato parpadea, respira y mueve la cola sin interacción.
+- [X] Con "Quitar animaciones" activo en Android, el gato no se mueve.
+- [X] Marcar un hábito en Hoy hace saltar al gato con ojos felices.
+- [X] Marcar el último hábito pendiente del día muestra la celebración con huellitas/corazones.
+- [X] Abrir Hoy con el día ya al 100 % no dispara la celebración.
+- [X] Tocar al gato en cualquiera de las 4 pestañas reproduce el ronroneo y cambia el mensaje del globo.
+- [X] Tocar al gato 5 veces seguidas en 1 s produce un solo ronroneo.
+- [X] `assets/sounds/ronroneo.wav` dura ≤ 2 s y `CREDITS.md` indica licencia CC0 y URL de origen.
+- [X] `python scripts/trim-meow.py` sin argumentos sigue generando `maullido.wav` igual que antes.
+- [X] El globo de Hoy muestra "X de Y" coherente con la tarjeta de progreso.
+- [X] Hoy muestra la fecha con formato "Lunes 28 de septiembre".
+- [X] En Áreas, el área destacada es la de menor proporción hecha hoy entre las que tienen pendientes, y muestra "Te falta K hoy".
+- [X] En Áreas, con todos los hábitos hechos, ninguna tarjeta se destaca.
+- [X] Tocar una tarjeta de Áreas abre su detalle.
+- [X] Progreso muestra en "Mejor racha" el hábito con mayor racha actual y su número de días.
+- [X] Progreso lista todos los hábitos activos con 7 huellas y su racha actual.
+- [X] Los porcentajes de "Por área" coinciden con los de la versión anterior de Progreso.
+- [X] Ejercicio muestra la tira L–D con A, B, C, A, B, C, D y resalta el día actual.
+- [X] "Empezar sesión" abre la sesión guiada de la rutina del día.
+- [X] Detalle de área y sesión guiada usan colores y fuentes nuevas y conservan todas sus funciones.
+- [X] Los recordatorios siguen sonando con el maullido de SPEC 05.
+- [X] README incluye SPEC 07 en características y en la tabla de specs.
 
 ---
 

@@ -10,12 +10,12 @@ import { usePhaseCue } from '@/exercise/cues';
 import { ExerciseImage } from '@/exercise/ExerciseImage';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
-import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
+import { AREA_STYLE, colors, fonts, fontSize, radius, spacing } from '@/theme';
 import type { Exercise, SessionStep } from '@/types';
 import { isRoutineId } from '@/validation';
 
 const WORK_COLOR = AREA_STYLE.fisica.color;
-const REST_COLOR = colors.primary;
+const REST_COLOR = colors.accent;
 
 export default function SesionScreen() {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
@@ -212,24 +212,27 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     backgroundColor: colors.background,
   },
-  message: { fontSize: fontSize.lg, color: colors.text, textAlign: 'center' },
+  message: { fontFamily: fonts.bodyBold, fontSize: fontSize.lg, color: colors.text, textAlign: 'center' },
   topBar: { flexDirection: 'row', justifyContent: 'space-between' },
-  muted: { fontSize: fontSize.sm, color: colors.textMuted },
+  muted: { fontFamily: fonts.bodyBold, fontSize: fontSize.sm, color: colors.textMuted },
   main: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
-  phase: { fontSize: fontSize.lg, fontWeight: '700', textTransform: 'uppercase' },
-  countdown: { fontSize: 72, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  pausedLabel: { fontSize: fontSize.md, color: colors.textMuted },
-  exerciseName: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text, textAlign: 'center' },
-  instructions: { fontSize: fontSize.md, color: colors.text, textAlign: 'center' },
+  phase: { fontFamily: fonts.bodyHeavy, fontSize: fontSize.lg, letterSpacing: 1, textTransform: 'uppercase' },
+  countdown: { fontFamily: fonts.displayBold, fontSize: 72, fontVariant: ['tabular-nums'] },
+  pausedLabel: { fontFamily: fonts.bodyBold, fontSize: fontSize.md, color: colors.textMuted },
+  exerciseName: { fontFamily: fonts.display, fontSize: 26, color: colors.text, textAlign: 'center' },
+  instructions: { fontFamily: fonts.body, fontSize: fontSize.md, lineHeight: 22, color: colors.text, textAlign: 'center' },
   card: {
     padding: spacing.md,
     marginBottom: spacing.md,
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    borderRadius: radius.lg,
+    shadowColor: colors.text,
+    shadowOpacity: 0.07,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 2,
   },
-  nextName: { fontSize: fontSize.md, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
+  nextName: { fontFamily: fonts.display, fontSize: 18, color: colors.text, marginBottom: spacing.xs },
   controls: { flexDirection: 'row', gap: spacing.sm },
   primaryButton: {
     flex: 1.4,
@@ -240,7 +243,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
   },
-  primaryText: { fontSize: fontSize.md, fontWeight: '700', color: colors.surface },
+  primaryText: { fontFamily: fonts.display, fontSize: 17, color: colors.surface },
   secondaryButton: {
     flex: 1,
     flexDirection: 'row',
@@ -250,11 +253,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
     backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: colors.border,
   },
-  secondaryText: { fontSize: fontSize.md, fontWeight: '600', color: colors.text },
+  secondaryText: { fontFamily: fonts.bodyHeavy, fontSize: fontSize.md, color: colors.text },
   backButton: { flex: 0, paddingHorizontal: spacing.lg },
-  completedTitle: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text },
+  completedTitle: { fontFamily: fonts.displayBold, fontSize: 28, color: colors.text },
   registeredRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 });

@@ -1,30 +1,49 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
+import { TabBarIcon } from '@/ui/TabBarIcon';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: colors.primary }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: { fontFamily: fonts.bodyBold, fontSize: 12 },
+        // El hueco del ícono mide 31×28 por defecto; la píldora (16 + 24 + 16) no cabe y el ícono queda en 0 px.
+        tabBarIconStyle: { width: 56, height: 32 },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Hoy',
-          tabBarIcon: ({ color, size }) => <Ionicons name="today-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="calendar-outline" color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="areas"
         options={{
           title: 'Áreas',
-          tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="grid-outline" color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="progreso"
         options={{
           title: 'Progreso',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart-outline" color={color} size={size} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="stats-chart-outline" color={color} focused={focused} />
           ),
         }}
       />
@@ -32,7 +51,9 @@ export default function TabsLayout() {
         name="ejercicio"
         options={{
           title: 'Ejercicio',
-          tabBarIcon: ({ color, size }) => <Ionicons name="fitness-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="barbell-outline" color={color} focused={focused} />
+          ),
         }}
       />
     </Tabs>
