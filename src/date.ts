@@ -24,7 +24,12 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
+/** Día de la semana en español: "Lunes". */
+export function weekdayNameEs(date: Date): string {
+  return DIAS[date.getDay()];
+}
+
 /** Fecha larga en español: "Lunes 28 de septiembre". Arreglos propios; no depende de Intl. */
 export function formatLongDateEs(date: Date): string {
-  return `${DIAS[date.getDay()]} ${date.getDate()} de ${MESES[date.getMonth()]}`;
+  return `${weekdayNameEs(date)} ${date.getDate()} de ${MESES[date.getMonth()]}`;
 }
