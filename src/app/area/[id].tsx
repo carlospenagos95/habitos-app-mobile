@@ -27,6 +27,7 @@ import {
 import { addHabitFromPlan, listSuggestions } from '@/db/plan';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 import type { AreaId, Habit, PlanItem } from '@/types';
+import { HABIT_NAME_MAX_LENGTH } from '@/validation';
 
 function formatTime(date: Date): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -188,6 +189,7 @@ export default function AreaDetailScreen() {
         <TextInput
           style={styles.input}
           placeholder="Nombre del nuevo hábito"
+          maxLength={HABIT_NAME_MAX_LENGTH}
           value={newHabitName}
           onChangeText={setNewHabitName}
         />
@@ -250,6 +252,7 @@ export default function AreaDetailScreen() {
               <View style={styles.habitRow}>
                 <TextInput
                   style={[styles.input, styles.editInput]}
+                  maxLength={HABIT_NAME_MAX_LENGTH}
                   value={editingName}
                   onChangeText={setEditingName}
                   autoFocus
