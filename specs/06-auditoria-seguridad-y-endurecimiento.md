@@ -160,7 +160,7 @@ Conventions:
 11. Crear `SECURITY.md`: modelo de amenazas, tabla de hallazgos H1–H10 con su corrección, riesgos aceptados y resultado final de `npm audit`.
 12. Agregar sección "Seguridad" en `README.md` (3–5 viñetas + enlace a `SECURITY.md`) y fila de SPEC 06 en la tabla de specs.
 13. Prueba local de prebuild: `npx expo prebuild --platform android --no-install` en copia desechable. Verificar `android:allowBackup="false"` en `AndroidManifest.xml`. No commitear `android/`.
-14. `eas build --profile preview --platform android`, instalar encima y ejecutar las pruebas de deep links de la guía.
+14. `eas build --profile preview --platform android`, instalar encima y ejecutar las pruebas de deep links de la guía. (Se ejecutará con la SPEC 07)
 
 ---
 

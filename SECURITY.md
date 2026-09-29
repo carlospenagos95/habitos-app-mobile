@@ -72,6 +72,7 @@ El "fix" que propone `npm audit` baja a versiones de SDK antiguas (`expo@46`, `e
 
 - **Moderadas de `npm audit`** listadas arriba, sin parche dentro de SDK 57. No se usan `overrides` ni `npm audit fix --force` para no romper el build de Expo.
 - **Sin backups**: con `allowBackup: false`, cambiar de teléfono o desinstalar pierde los datos. Exportar datos queda para otra spec.
+- **Transferencia entre dispositivos (Android 12+)**: `allowBackup="false"` desactiva el backup a la nube, pero la transferencia dispositivo a dispositivo al configurar un teléfono nuevo puede seguir copiando `habitos.db`. Bloquearla exige `android:dataExtractionRules` vía config plugin; se acepta porque la copia va a otro teléfono del mismo usuario y los datos no son sensibles.
 - **DB sin cifrar**: `habitos.db` está en el almacenamiento privado de la app, sin SQLCipher. Datos no sensibles y app sin cuentas.
 - **Filas huérfanas previas**: no se migran ni se limpian. La UI normal no las genera.
 - **Nombres existentes** de más de 120 caracteres o con control/bidi: no se migran; se normalizan al renombrarlos.
