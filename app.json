@@ -9,6 +9,7 @@
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.buenoshabitos.app",
+      "allowBackup": false,
       "adaptiveIcon": {
         "backgroundColor": "#87CEEB",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

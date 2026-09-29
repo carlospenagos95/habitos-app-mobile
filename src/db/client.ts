@@ -55,11 +55,15 @@ const SEED_PLAN: Record<AreaId, string[]> = {
 
 let db: SQLite.SQLiteDatabase | null = null;
 
-/** Abre (o reutiliza) la conexión a habitos.db y corre las migraciones pendientes. */
+/**
+ * Abre (o reutiliza) la conexión a habitos.db y corre las migraciones pendientes.
+ * `foreign_keys` es por conexión; se activa después de migrar (SPEC 06).
+ */
 export function getDb(): SQLite.SQLiteDatabase {
   if (!db) {
     db = SQLite.openDatabaseSync(DB_NAME);
     migrate(db);
+    db.execSync('PRAGMA foreign_keys = ON');
   }
   return db;
 }

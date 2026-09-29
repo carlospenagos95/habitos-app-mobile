@@ -27,6 +27,7 @@ import {
 import { addHabitFromPlan, listSuggestions } from '@/db/plan';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
 import type { AreaId, Habit, PlanItem } from '@/types';
+import { HABIT_NAME_MAX_LENGTH, isAreaId } from '@/validation';
 
 function formatTime(date: Date): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -60,7 +61,25 @@ async function trySetReminder(
 
 export default function AreaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const areaId = id as AreaId;
+  const router = useRouter();
+
+  // SPEC 06: el id llega por deep link (buenoshabitos://area/<x>); sin área válida no hay
+  // formulario ni sugerencias, así que no se puede escribir nada en la DB.
+  if (!isAreaId(id)) {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.back}>‹ Volver</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Área no encontrada.</Text>
+      </View>
+    );
+  }
+
+  return <AreaDetail areaId={id} />;
+}
+
+function AreaDetail({ areaId }: { areaId: AreaId }) {
   const router = useRouter();
   const area = getAreas().find((a) => a.id === areaId);
   const areaStyle = AREA_STYLE[areaId];
@@ -188,6 +207,7 @@ export default function AreaDetailScreen() {
         <TextInput
           style={styles.input}
           placeholder="Nombre del nuevo hábito"
+          maxLength={HABIT_NAME_MAX_LENGTH}
           value={newHabitName}
           onChangeText={setNewHabitName}
         />
@@ -250,6 +270,7 @@ export default function AreaDetailScreen() {
               <View style={styles.habitRow}>
                 <TextInput
                   style={[styles.input, styles.editInput]}
+                  maxLength={HABIT_NAME_MAX_LENGTH}
                   value={editingName}
                   onChangeText={setEditingName}
                   autoFocus
