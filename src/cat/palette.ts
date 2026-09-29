@@ -16,7 +16,9 @@ export const catPalette = {
   earInner: '#F1B0A0',
   cheek: '#F4B6B6',
   collar: '#7B3F8C',
-  tag: '#F2C14E',
+  tag: '#F2C14E', // placa del collar y trofeo
+  goldLight: '#FBE08A',
+  goldShade: '#C9922A',
   outline: '#2B2523',
   shine: '#FFFFFF',
 };

@@ -5,6 +5,7 @@ import {
   Defs,
   Ellipse,
   G,
+  LinearGradient,
   Path,
   RadialGradient,
   Stop,
@@ -23,6 +24,7 @@ export type CatIds = {
   gray: string;
   eye: string;
   shadow: string;
+  gold: string;
   headClip: string;
   bodyClip: string;
 };
@@ -36,6 +38,7 @@ export function useCatIds(): CatIds {
     gray: `${base}gray`,
     eye: `${base}eye`,
     shadow: `${base}shadow`,
+    gold: `${base}gold`,
     headClip: `${base}headClip`,
     bodyClip: `${base}bodyClip`,
   };
@@ -71,6 +74,11 @@ export function CatDefs({ ids, bodyPath }: { ids: CatIds; bodyPath?: string }) {
         <Stop offset="0" stopColor={c.outline} stopOpacity={0.24} />
         <Stop offset="1" stopColor={c.outline} stopOpacity={0} />
       </RadialGradient>
+      <LinearGradient id={ids.gold} x1="0" y1="0" x2="1" y2="1">
+        <Stop offset="0" stopColor={c.goldLight} />
+        <Stop offset="0.5" stopColor={c.tag} />
+        <Stop offset="1" stopColor={c.goldShade} />
+      </LinearGradient>
       <ClipPath id={ids.headClip}>
         <Path d={HEAD_PATH} />
       </ClipPath>
