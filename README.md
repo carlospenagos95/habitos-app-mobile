@@ -160,6 +160,16 @@ Ambos usan el package `com.buenoshabitos.app` y se instalan uno encima del otro.
 
 ---
 
+## Seguridad
+
+- Datos solo en el teléfono: sin red en tiempo de ejecución y `allowBackup: false` (no hay backups de Google ni `adb backup`).
+- La capa `src/db/` valida todo lo que escribe (`src/validation.ts`): áreas, ids, fechas, horas y nombres de hábito (máx. 120 caracteres, sin caracteres de control ni bidi).
+- Deep links `buenoshabitos://area/<x>` y `buenoshabitos://sesion/<x>` validan el parámetro; un valor inválido muestra "no encontrado" sin escribir nada.
+- SQLite con `PRAGMA foreign_keys = ON` y consultas siempre parametrizadas.
+- Modelo de amenazas, hallazgos y riesgos aceptados en [SECURITY.md](SECURITY.md).
+
+---
+
 ## Metodología: specs
 
 Cada funcionalidad se define primero en una spec en `specs/` y luego se implementa en una rama `spec-NN-slug`.
@@ -171,3 +181,4 @@ Cada funcionalidad se define primero en una spec en `specs/` y luego se implemen
 | [03](specs/03-rutina-ejercicio-en-casa.md) | Rutina de ejercicio en casa de 1 hora |
 | [04](specs/04-apk-autonomo-preview.md) | APK autónomo con perfil `preview` |
 | [05](specs/05-identidad-gato-icono-y-maullido.md) | Identidad de gato: ícono, splash y maullido |
+| [06](specs/06-auditoria-seguridad-y-endurecimiento.md) | Auditoría de seguridad y endurecimiento |
