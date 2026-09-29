@@ -1,6 +1,7 @@
 import { getDb } from './client';
 import { todayLocal } from '../date';
 import type { AreaId, Habit } from '../types';
+import { isAreaId, isPositiveInt, isTimeHHMM, normalizeHabitName } from '../validation';
 
 export type HabitRow = {
   id: number;
@@ -26,12 +27,14 @@ export function rowToHabit(row: HabitRow): Habit {
   };
 }
 
-/** Crea un hábito en un área. Rechaza nombres vacíos o solo espacios. */
+function assertHabitId(id: number): void {
+  if (!isPositiveInt(id)) throw new Error('Id de hábito inválido.');
+}
+
+/** Crea un hábito en un área. Rechaza áreas inexistentes y nombres inválidos. */
 export function createHabit(areaId: AreaId, name: string, planItemId: string | null = null): Habit {
-  const trimmedName = name.trim();
-  if (trimmedName.length === 0) {
-    throw new Error('El nombre del hábito no puede estar vacío.');
-  }
+  if (!isAreaId(areaId)) throw new Error('Área inválida.');
+  const trimmedName = normalizeHabitName(name);
 
   const db = getDb();
   const createdAt = todayLocal();
@@ -52,12 +55,10 @@ export function createHabit(areaId: AreaId, name: string, planItemId: string | n
   };
 }
 
-/** Renombra un hábito existente. Rechaza nombres vacíos o solo espacios. */
+/** Renombra un hábito existente. Rechaza ids y nombres inválidos. */
 export function renameHabit(id: number, name: string): void {
-  const trimmedName = name.trim();
-  if (trimmedName.length === 0) {
-    throw new Error('El nombre del hábito no puede estar vacío.');
-  }
+  assertHabitId(id);
+  const trimmedName = normalizeHabitName(name);
 
   const db = getDb();
   db.runSync('UPDATE habits SET name = ? WHERE id = ?', [trimmedName, id]);
@@ -69,6 +70,10 @@ export function setHabitReminder(
   reminderTime: string | null,
   notificationId: string | null
 ): void {
+  assertHabitId(id);
+  if (reminderTime !== null && !isTimeHHMM(reminderTime)) {
+    throw new Error('Hora de recordatorio inválida.');
+  }
   const db = getDb();
   db.runSync('UPDATE habits SET reminder_time = ?, notification_id = ? WHERE id = ?', [
     reminderTime,
@@ -79,6 +84,7 @@ export function setHabitReminder(
 
 /** Marca un hábito como archivado. No borra sus logs. */
 export function archiveHabit(id: number): void {
+  assertHabitId(id);
   const db = getDb();
   db.runSync('UPDATE habits SET archived = 1 WHERE id = ?', [id]);
 }
