@@ -213,7 +213,7 @@ src/ui/
 - [ ] "Empezar sesión" abre la sesión guiada de la rutina del día.
 - [ ] Detalle de área y sesión guiada usan colores y fuentes nuevas y conservan todas sus funciones.
 - [ ] Los recordatorios siguen sonando con el maullido de SPEC 05.
-- [ ] README incluye SPEC 06 en características y en la tabla de specs.
+- [ ] README incluye SPEC 07 en características y en la tabla de specs.
 
 ---
 

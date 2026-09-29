@@ -2,6 +2,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Svg, { Ellipse, G, Path } from 'react-native-svg';
 
+import { Celebration } from './Celebration';
 import { catPalette as c, OUTLINE_WIDTH } from './palette';
 import {
   CatDefs,
@@ -23,6 +24,8 @@ const AnimatedG = Animated.createAnimatedComponent(G);
 type Props = {
   pose: CatPose;
   mood?: CatMood;
+  // Cambia en cada disparo para repetir la reacción (ver useCatMood).
+  moodKey?: number;
   // Ancho en px; el alto sale de la proporción de la pose.
   size: number;
   onPress?: () => void;
@@ -38,13 +41,15 @@ const EYES_BY_MOOD: Record<CatMood, CatEyes> = {
 
 type PoseProps = { ids: CatIds; eyes: CatEyes; anim: CatAnimation };
 
-// Cabeza completa colocada en (x, y) de la pose. La oreja naranja y los ojos se animan.
+// Cabeza completa colocada en (x, y) de la pose. Orejas y ojos se animan.
 function Head({ ids, eyes, anim, x, y }: PoseProps & { x: number; y: number }) {
   return (
     <G transform={`translate(${x} ${y})`}>
-      <Ear ids={ids} fur="gray" />
+      <AnimatedG animatedProps={anim.earLeft}>
+        <Ear ids={ids} fur="gray" />
+      </AnimatedG>
       <G transform="scale(-1 1)">
-        <AnimatedG animatedProps={anim.ear}>
+        <AnimatedG animatedProps={anim.earRight}>
           <Ear ids={ids} fur="orange" />
         </AnimatedG>
       </G>
@@ -223,25 +228,30 @@ type PoseDef = {
 };
 
 const POSES: Record<CatPose, PoseDef> = {
-  sentado: { viewBox: [0, 0, 200, 212], pivot: { x: 100, y: 203 }, Component: Sentado },
+  // Margen arriba para que el salto de feliz/celebra no recorte las orejas.
+  sentado: { viewBox: [0, -22, 200, 234], pivot: { x: 100, y: 203 }, Component: Sentado },
   asomado: { viewBox: [0, 0, 200, 134], pivot: { x: 100, y: 134 }, Component: Asomado },
   trofeo: { viewBox: [0, 0, 200, 212], pivot: { x: 100, y: 203 }, Component: TrofeoPose },
   estirado: { viewBox: [0, 12, 262, 146], pivot: { x: 136, y: 152 }, Component: Estirado },
 };
 
-export function Cat({ pose, mood = 'idle', size, onPress, style }: Props) {
+export function Cat({ pose, mood = 'idle', moodKey = 0, size, onPress, style }: Props) {
   const ids = useCatIds();
   const { viewBox, pivot, Component } = POSES[pose];
-  const anim = useCatAnimation(pivot);
+  const anim = useCatAnimation(pivot, mood, moodKey);
   const [x, y, w, h] = viewBox;
-  const svg = (
-    <Svg width={size} height={(size * h) / w} viewBox={`${x} ${y} ${w} ${h}`}>
-      <AnimatedG animatedProps={anim.root}>
-        <Component ids={ids} eyes={EYES_BY_MOOD[mood]} anim={anim} />
-      </AnimatedG>
-    </Svg>
+  const height = (size * h) / w;
+  const content = (
+    <>
+      <Svg width={size} height={height} viewBox={`${x} ${y} ${w} ${h}`}>
+        <AnimatedG animatedProps={anim.root}>
+          <Component ids={ids} eyes={EYES_BY_MOOD[mood]} anim={anim} />
+        </AnimatedG>
+      </Svg>
+      {mood === 'celebra' && !anim.reduceMotion && <Celebration key={moodKey} height={height} />}
+    </>
   );
-  if (!onPress) return <View style={style}>{svg}</View>;
+  if (!onPress) return <View style={style}>{content}</View>;
   return (
     <Pressable
       onPress={onPress}
@@ -249,7 +259,7 @@ export function Cat({ pose, mood = 'idle', size, onPress, style }: Props) {
       accessibilityRole="button"
       accessibilityLabel="Michi, tócalo para mimarlo"
     >
-      {svg}
+      {content}
     </Pressable>
   );
 }
