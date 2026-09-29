@@ -11,14 +11,19 @@ import { ExerciseImage } from '@/exercise/ExerciseImage';
 import { buildSteps, formatClock } from '@/exercise/steps';
 import { useSessionTimer } from '@/exercise/useSessionTimer';
 import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
-import type { Exercise, RoutineId, SessionStep } from '@/types';
+import type { Exercise, SessionStep } from '@/types';
+import { isRoutineId } from '@/validation';
 
 const WORK_COLOR = AREA_STYLE.fisica.color;
 const REST_COLOR = colors.primary;
 
 export default function SesionScreen() {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
-  const routine = useMemo(() => getRoutine(routineId as RoutineId), [routineId]);
+  // SPEC 06: routineId llega por deep link; solo se consulta la DB con un id conocido.
+  const routine = useMemo(
+    () => (isRoutineId(routineId) ? getRoutine(routineId) : null),
+    [routineId]
+  );
   const steps = useMemo(() => (routine ? buildSteps(routine) : []), [routine]);
 
   if (routine == null || steps.length === 0) {
