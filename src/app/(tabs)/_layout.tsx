@@ -16,6 +16,8 @@ export default function TabsLayout() {
           paddingTop: 6,
         },
         tabBarLabelStyle: { fontFamily: fonts.bodyBold, fontSize: 12 },
+        // El hueco del ícono mide 31×28 por defecto; la píldora (16 + 24 + 16) no cabe y el ícono queda en 0 px.
+        tabBarIconStyle: { width: 56, height: 32 },
       }}
     >
       <Tabs.Screen
