@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import Constants, { AppOwnership } from 'expo-constants';
+import { isTimeHHMM } from './validation';
 
 // `expo-notifications` deja de estar disponible en Expo Go (SDK 53+): con solo importarlo
 // en Expo Go, el módulo arroja un error a nivel de módulo. Por eso el import es dinámico y
@@ -62,6 +63,7 @@ export async function scheduleHabitReminder(
   habitName: string,
   time: string
 ): Promise<string | null> {
+  if (!isTimeHHMM(time)) throw new Error('Hora de recordatorio inválida.');
   const Notifications = await loadNotifications();
   if (!Notifications) return null;
 
