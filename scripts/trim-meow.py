@@ -1,6 +1,9 @@
-# Genera assets/sounds/maullido.wav (SPEC 05) a partir del WAV CC0 descargado de freesound.
-# Recorta un maullido, lo pasa a mono 44.1 kHz 16 bit, aplica fundido y normaliza.
-# Solo stdlib. Uso: python scripts/trim-meow.py [entrada.wav] [inicio_s] [fin_s]
+# Recorta un WAV CC0 descargado de freesound, lo pasa a mono 44.1 kHz 16 bit, aplica fundido y normaliza.
+# Solo stdlib.
+#   python scripts/trim-meow.py                                  → assets/sounds/maullido.wav (SPEC 05)
+#   python scripts/trim-meow.py entrada.wav salida.wav inicio_s fin_s
+# Ej. ronroneo (SPEC 07):
+#   python scripts/trim-meow.py scripts/_tmp/purr-original.wav assets/sounds/ronroneo.wav 12.0 14.0
 import array
 import sys
 import wave
@@ -8,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_IN = ROOT / 'scripts' / '_tmp' / 'meow-original.wav'
-OUT = ROOT / 'assets' / 'sounds' / 'maullido.wav'
+DEFAULT_OUT = ROOT / 'assets' / 'sounds' / 'maullido.wav'
 
 # Maullido más fuerte y ascendente del original (ver RMS por ventanas de 50 ms).
 DEFAULT_START = 5.50
@@ -53,9 +56,15 @@ def resample(samples, src_rate, dst_rate):
 
 
 def main():
-    src = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_IN
-    start = float(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_START
-    end = float(sys.argv[3]) if len(sys.argv) > 3 else DEFAULT_END
+    args = sys.argv[1:]
+    if not args:
+        src, out, start, end = DEFAULT_IN, DEFAULT_OUT, DEFAULT_START, DEFAULT_END
+    elif len(args) == 4:
+        src, out, start, end = Path(args[0]), Path(args[1]).resolve(), float(args[2]), float(args[3])
+    else:
+        sys.exit('Uso: trim-meow.py [entrada.wav salida.wav inicio_s fin_s]')
+    if end <= start:
+        sys.exit('fin_s debe ser mayor que inicio_s')
     if end - start > MAX_SECONDS:
         sys.exit(f'El recorte dura {end - start:.2f} s; máximo {MAX_SECONDS} s')
     if not src.exists():
@@ -74,13 +83,13 @@ def main():
     gain = PEAK / peak
     data = array.array('h', (round(max(-1.0, min(1.0, v * gain)) * 32767) for v in clip))
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with wave.open(str(OUT), 'wb') as w:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with wave.open(str(out), 'wb') as w:
         w.setnchannels(1)
         w.setsampwidth(2)
         w.setframerate(OUT_RATE)
         w.writeframes(data.tobytes())
-    print(f'{OUT.relative_to(ROOT)}: {n / OUT_RATE:.2f} s, mono {OUT_RATE} Hz 16 bit, ganancia x{gain:.2f}')
+    print(f'{out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}: {n / OUT_RATE:.2f} s, mono {OUT_RATE} Hz 16 bit, ganancia x{gain:.2f}')
 
 
 if __name__ == '__main__':
