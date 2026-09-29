@@ -1,4 +1,5 @@
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import Svg, { Ellipse, G, Path } from 'react-native-svg';
 
 import { catPalette as c, OUTLINE_WIDTH } from './palette';
@@ -15,6 +16,9 @@ import {
   type CatIds,
 } from './parts';
 import type { CatEyes, CatMood, CatPose } from './types';
+import { useCatAnimation, type CatAnimation } from './useCatAnimation';
+
+const AnimatedG = Animated.createAnimatedComponent(G);
 
 type Props = {
   pose: CatPose;
@@ -32,16 +36,33 @@ const EYES_BY_MOOD: Record<CatMood, CatEyes> = {
   mimado: 'cerrados',
 };
 
-// Cabeza completa colocada en (x, y) de la pose.
-function Head({ ids, x, y, eyes }: { ids: CatIds; x: number; y: number; eyes: CatEyes }) {
+type PoseProps = { ids: CatIds; eyes: CatEyes; anim: CatAnimation };
+
+// Cabeza completa colocada en (x, y) de la pose. La oreja naranja y los ojos se animan.
+function Head({ ids, eyes, anim, x, y }: PoseProps & { x: number; y: number }) {
   return (
     <G transform={`translate(${x} ${y})`}>
       <Ear ids={ids} fur="gray" />
       <G transform="scale(-1 1)">
-        <Ear ids={ids} fur="orange" />
+        <AnimatedG animatedProps={anim.ear}>
+          <Ear ids={ids} fur="orange" />
+        </AnimatedG>
       </G>
       <Face ids={ids} />
-      <Eyes ids={ids} kind={eyes} />
+      <AnimatedG animatedProps={anim.eyes}>
+        <Eyes ids={ids} kind={eyes} />
+      </AnimatedG>
+    </G>
+  );
+}
+
+// Cola colocada con `transform`; el vaivén gira sobre su base.
+function SwayingTail({ ids, anim, transform }: { ids: CatIds; anim: CatAnimation; transform: string }) {
+  return (
+    <G transform={transform}>
+      <AnimatedG animatedProps={anim.tail}>
+        <Tail ids={ids} />
+      </AnimatedG>
     </G>
   );
 }
@@ -52,13 +73,11 @@ const fill = (id: string) => `url(#${id})`;
 const SENTADO_BODY =
   'M64 96 C52 122 44 158 52 184 C58 198 76 202 100 202 C124 202 142 198 148 184 C156 158 148 122 136 96 Z';
 
-function SeatedBody({ ids, legs }: { ids: CatIds; legs: boolean }) {
+function SeatedBody({ ids, anim, legs }: { ids: CatIds; anim: CatAnimation; legs: boolean }) {
   return (
     <G>
       <Shadow ids={ids} cx={104} cy={203} rx={62} />
-      <G transform="translate(140 190)">
-        <Tail ids={ids} />
-      </G>
+      <SwayingTail ids={ids} anim={anim} transform="translate(140 190)" />
       <Path d={SENTADO_BODY} fill={fill(ids.cream)} />
       <G clipPath={fill(ids.bodyClip)}>
         <Path d="M36 118 C60 116 70 140 64 170 C60 186 50 196 40 206 Z" fill={fill(ids.gray)} />
@@ -77,16 +96,15 @@ function SeatedBody({ ids, legs }: { ids: CatIds; legs: boolean }) {
   );
 }
 
-type PoseProps = { ids: CatIds; eyes: CatEyes };
-
 // ---------- sentado: de frente (Hoy) ----------
 
-function Sentado({ ids, eyes }: PoseProps) {
+function Sentado(p: PoseProps) {
+  const { ids } = p;
   return (
     <G>
       <CatDefs ids={ids} bodyPath={SENTADO_BODY} />
-      <SeatedBody ids={ids} legs />
-      <Head ids={ids} x={100} y={66} eyes={eyes} />
+      <SeatedBody ids={ids} anim={p.anim} legs />
+      <Head {...p} x={100} y={66} />
     </G>
   );
 }
@@ -107,16 +125,17 @@ function Trophy({ ids }: { ids: CatIds }) {
   );
 }
 
-function TrofeoPose({ ids, eyes }: PoseProps) {
+function TrofeoPose(p: PoseProps) {
+  const { ids } = p;
   return (
     <G>
       <CatDefs ids={ids} bodyPath={SENTADO_BODY} />
-      <SeatedBody ids={ids} legs={false} />
+      <SeatedBody ids={ids} anim={p.anim} legs={false} />
       <Trophy ids={ids} />
       {/* Patitas delanteras abrazando la copa. */}
       <Ellipse cx={80} cy={143} rx={9} ry={7} fill={fill(ids.cream)} stroke={c.outline} strokeWidth={OUTLINE_WIDTH} />
       <Ellipse cx={120} cy={143} rx={9} ry={7} fill={fill(ids.cream)} stroke={c.outline} strokeWidth={OUTLINE_WIDTH} />
-      <Head ids={ids} x={100} y={66} eyes={eyes} />
+      <Head {...p} x={100} y={66} />
     </G>
   );
 }
@@ -125,13 +144,12 @@ function TrofeoPose({ ids, eyes }: PoseProps) {
 
 const ASOMADO_BODY = 'M56 134 C58 110 76 96 100 96 C124 96 142 110 144 134 Z';
 
-function Asomado({ ids, eyes }: PoseProps) {
+function Asomado(p: PoseProps) {
+  const { ids } = p;
   return (
     <G>
       <CatDefs ids={ids} bodyPath={ASOMADO_BODY} />
-      <G transform="translate(138 128) scale(0.8)">
-        <Tail ids={ids} />
-      </G>
+      <SwayingTail ids={ids} anim={p.anim} transform="translate(138 128) scale(0.8)" />
       <Path d={ASOMADO_BODY} fill={fill(ids.cream)} />
       <G clipPath={fill(ids.bodyClip)}>
         <Path d="M40 100 C66 100 72 118 70 136 L40 136 Z" fill={fill(ids.gray)} />
@@ -139,7 +157,7 @@ function Asomado({ ids, eyes }: PoseProps) {
       </G>
       <Path d={ASOMADO_BODY} fill="none" stroke={c.outline} strokeWidth={OUTLINE_WIDTH} />
       <Collar x1={74} x2={126} y={102} sag={8} />
-      <Head ids={ids} x={100} y={64} eyes={eyes} />
+      <Head {...p} x={100} y={64} />
       {/* Patitas apoyadas en el borde. */}
       <Ellipse cx={76} cy={124} rx={13} ry={8} fill={fill(ids.cream)} stroke={c.outline} strokeWidth={OUTLINE_WIDTH} />
       <Ellipse cx={124} cy={124} rx={13} ry={8} fill={fill(ids.cream)} stroke={c.outline} strokeWidth={OUTLINE_WIDTH} />
@@ -169,14 +187,13 @@ function Leg({ ids, x, top, width = 14 }: { ids: CatIds; x: number; top: number;
   );
 }
 
-function Estirado({ ids, eyes }: PoseProps) {
+function Estirado(p: PoseProps) {
+  const { ids } = p;
   return (
     <G>
       <CatDefs ids={ids} bodyPath={ESTIRADO_BODY} />
       <Shadow ids={ids} cx={136} cy={152} rx={92} />
-      <G transform="translate(204 98) scale(0.9)">
-        <Tail ids={ids} />
-      </G>
+      <SwayingTail ids={ids} anim={p.anim} transform="translate(204 98) scale(0.9)" />
       {/* Patas del lado de atrás, un poco translúcidas para dar profundidad. */}
       <G opacity={0.85}>
         <Leg ids={ids} x={90} top={110} />
@@ -193,27 +210,35 @@ function Estirado({ ids, eyes }: PoseProps) {
       <Leg ids={ids} x={198} top={112} width={16} />
       <Collar x1={40} x2={84} y={122} sag={7} />
       <G transform="translate(62 94) scale(0.9)">
-        <Head ids={ids} x={0} y={0} eyes={eyes} />
+        <Head {...p} x={0} y={0} />
       </G>
     </G>
   );
 }
 
-// viewBox de cada pose: [minX, minY, ancho, alto].
-const POSES: Record<CatPose, { viewBox: [number, number, number, number]; Component: (p: PoseProps) => React.JSX.Element }> = {
-  sentado: { viewBox: [0, 0, 200, 212], Component: Sentado },
-  asomado: { viewBox: [0, 0, 200, 134], Component: Asomado },
-  trofeo: { viewBox: [0, 0, 200, 212], Component: TrofeoPose },
-  estirado: { viewBox: [0, 12, 262, 146], Component: Estirado },
+type PoseDef = {
+  viewBox: [number, number, number, number]; // [minX, minY, ancho, alto]
+  pivot: { x: number; y: number }; // punto de apoyo: centro de la respiración
+  Component: (p: PoseProps) => React.JSX.Element;
+};
+
+const POSES: Record<CatPose, PoseDef> = {
+  sentado: { viewBox: [0, 0, 200, 212], pivot: { x: 100, y: 203 }, Component: Sentado },
+  asomado: { viewBox: [0, 0, 200, 134], pivot: { x: 100, y: 134 }, Component: Asomado },
+  trofeo: { viewBox: [0, 0, 200, 212], pivot: { x: 100, y: 203 }, Component: TrofeoPose },
+  estirado: { viewBox: [0, 12, 262, 146], pivot: { x: 136, y: 152 }, Component: Estirado },
 };
 
 export function Cat({ pose, mood = 'idle', size, onPress, style }: Props) {
   const ids = useCatIds();
-  const { viewBox, Component } = POSES[pose];
+  const { viewBox, pivot, Component } = POSES[pose];
+  const anim = useCatAnimation(pivot);
   const [x, y, w, h] = viewBox;
   const svg = (
     <Svg width={size} height={(size * h) / w} viewBox={`${x} ${y} ${w} ${h}`}>
-      <Component ids={ids} eyes={EYES_BY_MOOD[mood]} />
+      <AnimatedG animatedProps={anim.root}>
+        <Component ids={ids} eyes={EYES_BY_MOOD[mood]} anim={anim} />
+      </AnimatedG>
     </Svg>
   );
   if (!onPress) return <View style={style}>{svg}</View>;
