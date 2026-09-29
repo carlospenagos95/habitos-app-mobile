@@ -1,5 +1,6 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { catPalette } from '@/cat/palette';
 import { colors, radius } from '@/theme';
 import { PawIcon } from './PawIcon';
 
@@ -15,7 +16,7 @@ type Props = {
 };
 
 // Barra de progreso con una huella en el extremo del relleno.
-export function PawProgressBar({ value, color = colors.accent, pawColor = '#E08A3C', style }: Props) {
+export function PawProgressBar({ value, color = colors.accent, pawColor = catPalette.orange, style }: Props) {
   const pct = Math.round(Math.min(1, Math.max(0, value)) * 100);
   return (
     <View
