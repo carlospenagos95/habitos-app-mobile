@@ -15,7 +15,7 @@ import type { Exercise, SessionStep } from '@/types';
 import { isRoutineId } from '@/validation';
 
 const WORK_COLOR = AREA_STYLE.fisica.color;
-const REST_COLOR = colors.primary;
+const REST_COLOR = colors.accent;
 
 export default function SesionScreen() {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();

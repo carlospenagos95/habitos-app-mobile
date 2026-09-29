@@ -4,7 +4,7 @@ import { colors } from '@/theme';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: colors.primary }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: colors.accent }}>
       <Tabs.Screen
         name="index"
         options={{

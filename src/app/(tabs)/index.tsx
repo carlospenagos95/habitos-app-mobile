@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
   emptyText: { fontSize: fontSize.md, color: colors.textMuted },
   emptyButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,

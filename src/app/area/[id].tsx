@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     backgroundColor: colors.background,
   },
-  back: { fontSize: fontSize.md, color: colors.primary, marginBottom: spacing.sm },
+  back: { fontSize: fontSize.md, color: colors.accent, marginBottom: spacing.sm },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   addButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     justifyContent: 'center',
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   habitName: { fontSize: fontSize.md, color: colors.text },
   habitReminder: { fontSize: fontSize.sm, color: colors.textMuted },
   editInput: { paddingVertical: spacing.xs },
-  action: { color: colors.primary, fontWeight: '600' },
+  action: { color: colors.accent, fontWeight: '600' },
   suggestions: { marginTop: spacing.lg, paddingBottom: spacing.lg },
   sectionTitle: {
     fontSize: fontSize.sm,
