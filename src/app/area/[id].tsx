@@ -25,7 +25,7 @@ import {
   scheduleHabitReminder,
 } from '@/notifications';
 import { addHabitFromPlan, listSuggestions } from '@/db/plan';
-import { AREA_STYLE, colors, fontSize, radius, spacing } from '@/theme';
+import { AREA_STYLE, colors, fonts, fontSize, radius, spacing } from '@/theme';
 import type { AreaId, Habit, PlanItem } from '@/types';
 import { HABIT_NAME_MAX_LENGTH, isAreaId } from '@/validation';
 
@@ -198,7 +198,9 @@ function AreaDetail({ areaId }: { areaId: AreaId }) {
       </TouchableOpacity>
       <View style={styles.header}>
         {areaStyle != null && (
-          <Ionicons name={areaStyle.icon} size={28} color={areaStyle.color} />
+          <View style={[styles.iconBox, { backgroundColor: areaStyle.soft }]}>
+            <Ionicons name={areaStyle.icon} size={26} color={areaStyle.color} />
+          </View>
         )}
         <Text style={styles.title}>{area?.name ?? ''}</Text>
       </View>
@@ -207,6 +209,7 @@ function AreaDetail({ areaId }: { areaId: AreaId }) {
         <TextInput
           style={styles.input}
           placeholder="Nombre del nuevo hábito"
+          placeholderTextColor={colors.textMuted}
           maxLength={HABIT_NAME_MAX_LENGTH}
           value={newHabitName}
           onChangeText={setNewHabitName}
@@ -332,6 +335,14 @@ function AreaDetail({ areaId }: { areaId: AreaId }) {
   );
 }
 
+const cardShadow = {
+  shadowColor: colors.text,
+  shadowOpacity: 0.06,
+  shadowRadius: 16,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 2,
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -339,50 +350,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     backgroundColor: colors.background,
   },
-  back: { fontSize: fontSize.md, color: colors.accent, marginBottom: spacing.sm },
+  back: { fontFamily: fonts.bodyHeavy, fontSize: fontSize.md, color: colors.accent, marginBottom: spacing.sm },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: 12,
     marginBottom: spacing.md,
   },
-  title: { fontSize: fontSize.xl, fontWeight: '600', color: colors.text },
+  iconBox: { width: 44, height: 44, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
+  title: { fontFamily: fonts.displayBold, fontSize: 30, color: colors.text },
   form: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
   input: {
     flex: 1,
     backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: 10,
+    fontFamily: fonts.body,
     fontSize: fontSize.md,
     color: colors.text,
   },
   addButton: {
     backgroundColor: colors.accent,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    borderRadius: radius.pill,
+    paddingHorizontal: 18,
     justifyContent: 'center',
   },
-  addButtonText: { color: colors.surface, fontWeight: '600' },
+  addButtonText: { fontFamily: fonts.bodyHeavy, fontSize: 15, color: colors.surface },
   reminderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  error: { color: colors.error, marginBottom: spacing.sm },
-  warning: { color: colors.warning, marginBottom: spacing.sm },
-  empty: { color: colors.textMuted, marginTop: spacing.md },
+  error: { fontFamily: fonts.bodyBold, color: colors.error, marginBottom: spacing.sm },
+  warning: { fontFamily: fonts.bodyBold, color: colors.warning, marginBottom: spacing.sm },
+  empty: { fontFamily: fonts.body, color: colors.textMuted, marginTop: spacing.md },
   habitBlock: {
     padding: spacing.md,
     paddingBottom: spacing.sm,
-    marginBottom: spacing.sm,
+    marginBottom: 10,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    ...cardShadow,
   },
   habitRow: {
     flexDirection: 'row',
@@ -391,16 +403,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   habitInfo: { flex: 1 },
-  habitName: { fontSize: fontSize.md, color: colors.text },
-  habitReminder: { fontSize: fontSize.sm, color: colors.textMuted },
+  habitName: { flex: 1, fontFamily: fonts.bodyBold, fontSize: 15, color: colors.text },
+  habitReminder: { fontFamily: fonts.body, fontSize: fontSize.sm, color: colors.textMuted },
   editInput: { paddingVertical: spacing.xs },
-  action: { color: colors.accent, fontWeight: '600' },
+  action: { fontFamily: fonts.bodyHeavy, fontSize: 14, color: colors.accent },
   suggestions: { marginTop: spacing.lg, paddingBottom: spacing.lg },
   sectionTitle: {
-    fontSize: fontSize.sm,
-    fontWeight: '700',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
+    fontFamily: fonts.display,
+    fontSize: 16,
+    color: colors.text,
     marginBottom: spacing.sm,
   },
   suggestionCard: {
@@ -411,7 +422,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1.5,
     borderColor: colors.border,
     borderStyle: 'dashed',
   },

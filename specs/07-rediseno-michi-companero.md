@@ -178,7 +178,7 @@ src/ui/
 13. Rediseñar `src/app/(tabs)/progreso.tsx`: Mejor racha con gato trofeo, Por área, Huellitas de la semana con racha.
 14. Rediseñar `src/app/(tabs)/ejercicio.tsx`: cabecera con gato estirado, tarjeta de rutina, botón "Empezar sesión", tira "Esta semana".
 15. Aplicar el tema nuevo a `src/app/area/[id].tsx` y `src/app/sesion/[routineId].tsx` sin cambiar su lógica.
-16. Actualizar `README.md`: características SPEC 06, stack (`react-native-svg`, fuentes), script de sonido y fila en la tabla de specs.
+16. Actualizar `README.md`: características SPEC 07, stack (`react-native-svg`, fuentes), script de sonido y fila en la tabla de specs.
 17. Lanzar `eas build --profile preview --platform android` e instalar encima del APK de SPEC 05.
 
 ---
